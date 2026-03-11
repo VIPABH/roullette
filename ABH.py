@@ -3,7 +3,7 @@ import redis
 import asyncio
 import uvloop
 import logging
-from telethon import TelegramClient, events, connection
+from telethon import TelegramClient, events, connection, Button
 asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 logging.basicConfig(level=logging.WARNING)
 API_ID = int(os.getenv("API_ID"))  
