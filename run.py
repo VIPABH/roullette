@@ -1,0 +1,16 @@
+from ABH import *
+async def main():
+    try:
+        r.ping()
+        print("✅ اتصال Redis: مستقر")
+    except redis.ConnectionError:
+        print("❌ فشل الاتصال بـ Redis! تأكد من تشغيل السيرفر.")
+        return
+    await client.start(bot_token=BOT_TOKEN)
+    print("🚀 bot is running.")    
+    await client.run_until_disconnected()
+if __name__ == '__main__':
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\nتم إيقاف البوت يدوياً.")
