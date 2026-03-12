@@ -10,9 +10,9 @@ async def start(e):
         *(is_in_channel(uid, ch) for ch in channels)
     )
     buttons = []
-    for (ch, link), joined in zip(channels.items(), results):
+    for ch, joined in zip(channels, results):
         if not joined:
-            buttons.append([Button.url(f"اشترك في {ch}", link)])
+            buttons.append([Button.url(f"اشترك في {ch}", url=f"https://t.me/{ch}")])
     if buttons:
         await e.reply(
             "🔐 للوصول إلى خدمات البوت يجب الاشتراك في القنوات التالية:",
