@@ -23,7 +23,6 @@ async def start(e):
         )
         buttons = []
         for ch, joined in zip(channels, results):
-            print(f"نتائج التحقق للمستخدم {uid}: {results}")
             if not joined:
                 buttons.append([Button.url(f"اشترك في {ch}", url=f"https://t.me/{ch}")])
         if buttons:
