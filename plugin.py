@@ -18,21 +18,14 @@ async def start(e):
         caption = f'اهلا عزيزي ({ment})، أنت حالياً في واجهة الآدمن. ماذا تريد أن تفعل؟ 👇🏾'
         await e.reply(caption, buttons=buttons)        
     else:
-        if channels: 
-            results = await asyncio.gather(
-                *(is_in_channel(uid, ch) for ch in channels)
-            )
-            check_buttons = []
-            for (ch_name, link) in zip(channels.items(), results):
-                joined = is_in_channel(uid, ch_name)
-                print(ch_name, link, joined)
-                if not joined:
-                    check_buttons.append([Button.url(f"اشترك في {ch_name}", link)])            
-            if check_buttons:
-                check_buttons.append([Button.inline("تحقق من الاشتراك ✅", data="check_again")])
-                await e.reply(
-                    "🔐 للوصول إلى خدمات البوت، يجب الاشتراك في القنوات التالية أولاً:",
-                    buttons=check_buttons
-                )
-                return
-        await e.reply(f"✅ أهلاً بك يا {ment}\nتم التحقق من اشتراكك، يمكنك الآن استخدام البوت!")
+        for ch in channels:
+            notjoind = []
+            buttons = []
+            join = await is_in_channel(uid, ch)
+            if not join:
+                notjoind.append(ch)
+                buttons.append(Button.url(f"قناة{ch}", channels[ch]))
+        if notjoind:
+            caption = f"أنت غير مشترك في قناة{'، '.join(notjoind)}، يرجى الاشتراك في قناة{'، '.join(buttons)}"
+            return await e.reply(caption, buttons=buttons)
+    await e.reply(f"✅ أهلاً بك يا {ment}\nتم التحقق من اشتراكك، يمكنك الآن استخدام البوت!")
