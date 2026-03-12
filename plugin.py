@@ -18,14 +18,16 @@ async def start(e):
         caption = f'اهلا عزيزي ({ment})، أنت حالياً في واجهة الآدمن. ماذا تريد أن تفعل؟ 👇🏾'
         await e.reply(caption, buttons=buttons)        
     else:
+        notjoind_names = []
+        buttons = []
         for ch in channels:
-            notjoind = []
-            buttons = []
-            join = await is_in_channel(uid, ch)
-            if not join:
-                notjoind.append(ch)
-                buttons.append(Button.url(f"قناة{ch}", channels[ch]))
-        if notjoind:
-            caption = f"أنت غير مشترك في قناة{'، '.join(notjoind)}، يرجى الاشتراك في قناة{'، '.join(buttons)}"
+            link = channels[ch]            
+            is_joined = await is_in_channel(uid, ch)            
+            if not is_joined:
+                notjoind_names.append(f"@{ch}") 
+                buttons.append([Button.url(f"اضغط للاشتراك في {ch}", link)])
+        if buttons:
+            names_str = "، ".join(notjoind_names)
+            caption = f"⚠️ عزيزي، أنت غير مشترك في القنوات التالية:\n{names_str}\n\nيرجى الاشتراك ثم الضغط على /start مرة أخرى."
             return await e.reply(caption, buttons=buttons)
-    await e.reply(f"✅ أهلاً بك يا {ment}\nتم التحقق من اشتراكك، يمكنك الآن استخدام البوت!")
+        await e.reply(f"✅ أهلاً بك يا {ment}\nتم التحقق من اشتراكك، يمكنك الآن استخدام البوت!")
