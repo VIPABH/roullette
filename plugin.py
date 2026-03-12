@@ -24,6 +24,7 @@ async def start(e):
             )
             check_buttons = []
             for (ch_name, link), joined in zip(channels.items(), results):
+                print(ch_name, link, joined)
                 if not joined:
                     check_buttons.append([Button.url(f"اشترك في {ch_name}", link)])            
             if check_buttons:
