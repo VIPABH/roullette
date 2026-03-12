@@ -4,14 +4,14 @@ wfffp = 1910015590
 owner = 7941637237
 name = {wfffp: 'ابن هاشم', owner: 'ابراهيم'}
 can = lambda user_id: user_id in [wfffp, owner]
-async def mention(entity):
+def mention(entity):
     try:
         if hasattr(entity, 'sender') and entity.sender:
             user = entity.sender
         elif hasattr(entity, 'sender_id') and entity.sender_id:
-            user = await ABH.get_entity(entity.sender_id)
+            user = ABH.get_entity(entity.sender_id)
         else:
-            user = await ABH.get_entity(entity)
+            user = ABH.get_entity(entity)
         name = getattr(user, 'first_name', "مستخدم")
         if not name or name.strip() == "":
             name = "مستخدم"
