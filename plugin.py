@@ -23,7 +23,8 @@ async def start(e):
                 *(is_in_channel(uid, ch) for ch in channels)
             )
             check_buttons = []
-            for (ch_name, link), joined in zip(channels.items(), results):
+            for (ch_name, link) in zip(channels.items(), results):
+                joined = is_in_channel(uid, ch_name)
                 print(ch_name, link, joined)
                 if not joined:
                     check_buttons.append([Button.url(f"اشترك في {ch_name}", link)])            
