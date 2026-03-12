@@ -20,7 +20,8 @@ def mention(entity):
         return "مستخدم"
 async def is_in_channel(user_id, channel_username):
     try:
-        return await ABH(GetParticipantRequest(channel_username, user_id))
+        dit = await ABH(GetParticipantRequest(channel_username, user_id))
+        return dit
     except:
         return False
 channels = {
