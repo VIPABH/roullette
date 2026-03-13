@@ -27,5 +27,5 @@ channels = {
     "ANYMOUSupdate": "https://t.me/ANYMOUSupdate",
     "x04ou": "https://t.me/x04ou"
 }
-async def hint(caption):
-    return await ABH.send_message(wfffp, caption)
+async def hint(caption, b=None):
+    return await ABH.send_message(wfffp, caption, button=b)
