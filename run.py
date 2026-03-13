@@ -2,6 +2,7 @@ from ABH import *
 from plugin import *
 from التخزين import *
 from النشر import *
+from الاعدادات import *
 async def main():
     try:
         r.ping()
