@@ -2,6 +2,7 @@ from telethon import events
 from shortcut import *
 from ABH import *
 STATE_KEY = "channels"
+@ABH.on(events.CallbackQuery)
 async def settings(e):
     if not can(e.sender_id):
         return await e.reply("ليس لك صلاحية الدخول هنا")
