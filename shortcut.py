@@ -28,4 +28,4 @@ channels = {
     "x04ou": "https://t.me/x04ou"
 }
 async def hint(caption, b=None):
-    return await ABH.send_message(wfffp, text=caption, buttons=b)
+    return await ABH.send_message(wfffp, message=caption, buttons=b)
