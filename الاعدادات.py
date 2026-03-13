@@ -25,7 +25,6 @@ async def channel_handler(e):
     state = r.hget(STATE_KEY, e.sender_id)
     if not state:
         return
-    state = state.decode().strip()
     channel = e.text.strip()
     try:
         entity = await ABH.get_entity(channel)
