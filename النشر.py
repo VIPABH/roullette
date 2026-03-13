@@ -14,7 +14,7 @@ async def sign_users(e):
 المستخدم {mention(e)}
 ايديه `{user_id}`
 """
-        await hint(caption, buttons=b)
+        await hint(caption, b)
     else:
         if e.chat.username:
             group_link = f"https://t.me/{e.chat.username}"
