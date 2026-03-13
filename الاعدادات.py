@@ -35,7 +35,7 @@ async def channel_handler(e):
     except ChatAdminRequiredError:
         return await e.reply("❌ البوت ليس لديه صلاحيات داخل القناة")
     except Exception as E:
-        ptint(E)
+        print(E)
         return await e.reply("❌ تأكد من إدخال يوزر أو ايدي صحيح للقناة")
     if state == "add_channel":
         r.sadd("forced_channels", str(entity.id))
