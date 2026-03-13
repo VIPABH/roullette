@@ -1,6 +1,6 @@
 from shortcut import *
 from ABH import *
-frombالنشر import *
+from النشر import *
 import asyncio
 @ABH.on(events.NewMessage(pattern="^/start$"))
 async def start(e):
