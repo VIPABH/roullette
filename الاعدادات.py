@@ -11,15 +11,15 @@ async def settings(e):
     data = e.data.decode("utf-8")
     if data == "set_channel":
         r.hset(STATE_KEY, e.sender_id, "add_channel")
-        await e.edit("أرسل الآن ايدي أو يوزر القناة", alert=True)
+        await e.edit("أرسل الآن ايدي أو يوزر القناة")
     elif data == "del_channel":
         r.hset(STATE_KEY, e.sender_id, "del_channel")
-        await e.edit("أرسل الآن ايدي أو يوزر القناة", alert=True)
+        await e.edit("أرسل الآن ايدي أو يوزر القناة")
     elif data == "show_channels":
-        await e.edit("قنوات الاشتراك الاجباري 👇", alert=True)
+        await e.edit("قنوات الاشتراك الاجباري 👇")
     elif data == "count_users":
         count = r.scard("users")
-        await e.edit(f"عدد المستخدمين حالياً: {count}", alert=True)
+        await e.edit(f"عدد المستخدمين حالياً: {count}")
 @ABH.on(events.NewMessage)
 async def channel_handler(e):
     state = r.hget(STATE_KEY, e.sender_id)
