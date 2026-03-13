@@ -14,6 +14,8 @@ async def settings(e):
         await e.reply("ارسل الان ايدي او يوزر القناة")
     elif data == "show_channels":
         await e.reply("قنوات الاشتراك الاجباري 👇🏾")
+    elif data == 'count_users':
+        await e.answer(f"عدد المستخدمين حاليا ( {r.scard('users')} )")
 @ABH.on(events.NewMessage)
 async def channel_handler(e):
     state = r.hget(STATE_KEY, e.sender_id)
