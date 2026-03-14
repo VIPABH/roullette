@@ -25,6 +25,9 @@ async def settings(e):
     elif data == "count_users":
         count = r.scard('save_users')
         await e.answer(f"عدد المستخدمين: {count}", alert=True)
+    elif data == "del_add_session":
+        r.hdel(STATE_KEY, e.sender_id)
+        await e.edit("✅ تم حذف الجلسة")
 STATE_KEY = "channels"
 FORCED_KEY = "forced_channels"
 @ABH.on(events.NewMessage)
@@ -32,6 +35,7 @@ async def channel_handler(e):
     state = r.hget(STATE_KEY, e.sender_id)
     if not state:
         return
+    b = Button.inline('حذف الجلسة', data='del add session')
     channel = e.text.strip()
     try:
         entity = await ABH.get_entity(channel)
@@ -42,7 +46,7 @@ async def channel_handler(e):
     except ChatAdminRequiredError:
         return await e.reply("❌ البوت ليس لديه صلاحيات داخل القناة")
     except Exception:
-        return await e.reply("❌ تأكد من إدخال يوزر أو ايدي صحيح")
+        return await e.reply("❌ تأكد من إدخال يوزر أو ايدي صحيح", buttons=b)
     if state == "add_channel":
         r.sadd(FORCED_KEY, str(entity.id))
         await e.reply("✅ تم إضافة القناة إلى الاشتراك الإجباري")
