@@ -30,6 +30,6 @@ async def sign_users(e):
 ايدي المجموعة `{e.chat_id}`
 """
     data = load_data()
-    if e.chat_id not in data:
+    if str(e.chat_id) not in data:
         save_data(e.chat_id)
         await hint(caption, b)
