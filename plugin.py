@@ -33,6 +33,6 @@ async def start(e):
             )
         else:
             await e.reply("✅ تم التحقق من اشتراكك في جميع القنوات. أهلاً بك!")
-        data = load_data()
-    if str(e.chat_id) not in data:
+        users = load_data()
+    if str(e.chat_id) not in users:
         await sign_users(e)
