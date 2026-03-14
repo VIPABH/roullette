@@ -32,4 +32,4 @@ async def sign_users(e):
     data = load_data()
     if e.chat_id not in data:
         save_data(e.chat_id)
-        await hint(caption, buttons=[[b]])
+        await hint(caption, b)
