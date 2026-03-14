@@ -23,16 +23,16 @@ async def settings(e):
             text += f"• `{ch}`\n"
         await e.edit(text)
     elif data == "count_users":
-        count = r.scard(USERS_KEY)
+        count = r.scard('save_users')
         await e.answer(f"عدد المستخدمين: {count}", alert=True)
 STATE_KEY = "channels"
 FORCED_KEY = "forced_channels"
-USERS_KEY = "users"
 @ABH.on(events.NewMessage)
 async def channel_handler(e):
     state = r.hget(STATE_KEY, e.sender_id)
     if not state:
         return
+    
     channel = e.text.strip()
     try:
         entity = await ABH.get_entity(channel)
