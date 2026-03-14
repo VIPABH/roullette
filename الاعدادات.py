@@ -27,7 +27,7 @@ async def settings(e):
         await e.answer(f"عدد المستخدمين: {count}", alert=True)
 STATE_KEY = "channels"
 FORCED_KEY = "forced_channels"
-USERS_KEY = "users"
+USERS_KEY = "_users"
 @ABH.on(events.NewMessage)
 async def channel_handler(e):
     state = r.hget(STATE_KEY, e.sender_id)
