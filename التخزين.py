@@ -1,6 +1,5 @@
 from ABH import *
 def save_data(data):
-    r.rpush("USERS", data)
-    return r.sadd("USERS", data)
+    return r.sadd("save_users", data)
 def load_data():
-    return r.smembers("USERS")
+    return r.smembers("save_users")
