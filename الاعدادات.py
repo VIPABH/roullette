@@ -30,7 +30,6 @@ FORCED_KEY = "forced_channels"
 USERS_KEY = "users"
 @ABH.on(events.NewMessage)
 async def channel_handler(e):
-    r.delete(USERS_KEY)
     state = r.hget(STATE_KEY, e.sender_id)
     if not state:
         return
