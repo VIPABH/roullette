@@ -35,7 +35,7 @@ async def channel_handler(e):
     state = r.hget(STATE_KEY, e.sender_id)
     if not state:
         return
-    b = Button.inline('حذف الجلسة', data='del add session')
+    b = Button.inline('حذف الجلسة', data='del_add_session')
     channel = e.text.strip()
     try:
         entity = await ABH.get_entity(channel)
