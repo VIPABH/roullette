@@ -7,8 +7,8 @@ import asyncio
 async def start(e):
     if not e.is_private:
         return
-    if r.sismember(BANNED_KEY, str(e.sender_id)):
-        return 
+    # if r.sismember(BANNED_KEY, str(e.sender_id)):
+    #     return 
     uid = e.sender_id
     ment = mention(e)
     if uid in name: 
