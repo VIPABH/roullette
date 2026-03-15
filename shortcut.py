@@ -11,12 +11,14 @@ async def mention(entity):
         elif hasattr(entity, 'sender_id') and entity.sender_id:
             user = await ABH.get_entity(entity.sender_id)
         else:
-            user = await ABH.get_entity(entity)
-        name = getattr(user, 'first_name', "مستخدم")
-        if not name or name.strip() == "":
-            name = "مستخدم"
-        return f"[{name}](tg://user?id={user.id})"
-    except Exception:
+            user = await ABH.get_entity(int(entity))        
+        if user:
+            name = getattr(user, 'first_name', "مستخدم")
+            if not name or name.strip() == "":
+                name = "مستخدم"
+            return f"[{name}](tg://user?id={user.id})"
+        return "مستخدم"
+    except:
         return "مستخدم"
 async def is_in_channel(user_id, channel_username):
     try:
