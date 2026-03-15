@@ -12,7 +12,7 @@ async def main_settings(e, caption=None):
         [Button.inline("👥 قائمة المستخدمين", data="list_users"), Button.inline("🚫 حظر مستخدم", data="ban_user")],
         [Button.inline("⚙️ إنهاء الجلسة", data="del_add_session")]
     ]
-    await e.edit("🛠 **إعدادات البوت والتحكم:**" if caption is None else caption, buttons=buttons)
+    await e.edit if e.out else e.reply("🛠 **إعدادات البوت والتحكم:**" if caption is None else caption, buttons=buttons)
 @ABH.on(events.CallbackQuery)
 async def settings_callback(e):
     if not can(e.sender_id):
