@@ -49,20 +49,18 @@ async def settings_callback(e):
         await e.answer(f"✅ تم حذف {ch_id}", alert=True)
         await main_settings(e) 
     elif data == "list_users":
-        users = r.smembers(USERS_KEY)
+        users = list(r.smembers(USERS_KEY))
         if not users:
-            return await e.answer("⚠️ لا يوجد مستخدمين مخزنين", alert=True)
-        await e.answer("🔄 جاري تحضير القائمة...")
-        all_users = list(users)         
-        for i in range(0, len(all_users), 20):
-            chunk = all_users[i:i + 20]
+            return await e.answer("⚠️ لا يوجد مستخدمين", alert=True)
+        await e.answer("🔄 جاري جلب البيانات...")        
+        for i in range(0, len(users), 20):
+            chunk = users[i:i + 20]
+            mentions = await ment(chunk)
             lines = []
-            num = i + 1
-            for u in chunk:
-                user_link = await mention(u) 
-                lines.append(f"{num}- ( {user_link} ) -- ( `{u}` )")
-                num += 1
-            msg = "👥 **قائمة المستخدمين:**\n\n" + "\n".join(lines)    
+            for idx, user_mention in enumerate(mentions):
+                u_id = chunk[idx]
+                lines.append(f"{i + idx + 1}- ( {user_mention} ) -- ( `{u_id}` )")
+            msg = "👥 **قائمة المستخدمين:**\n\n" + "\n".join(lines)
             if i == 0:
                 await e.edit(msg, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
             else:
