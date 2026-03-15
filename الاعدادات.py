@@ -56,7 +56,7 @@ async def settings_callback(e):
         all_users = list(users) 
         msg = "📋 قائمة المستخدمين:\n"
         for num, id in enumerate(all_users, start=1):
-            m = mention(id)
+            m = await mention(id)
             msg += f'{num}- ( {m} ) -- ( `{id}` )\n'
         await e.edit(msg, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
     elif data == "ban_user":
