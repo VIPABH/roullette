@@ -12,7 +12,11 @@ async def main_settings(e, caption=None):
         [Button.inline("👥 قائمة المستخدمين", data="list_users"), Button.inline("🚫 حظر مستخدم", data="ban_user")],
         [Button.inline("⚙️ إنهاء الجلسة", data="del_add_session")]
     ]
-    await e.edit if e.out else await e.reply("🛠 **إعدادات البوت والتحكم:**" if caption is None else caption, buttons=buttons)
+    text = "🛠 **إعدادات البوت والتحكم:**" if caption is None else caption
+    if hasattr(e, 'edit') and not isinstance(e, events.NewMessage.Event):
+        await e.edit(text, buttons=buttons)
+    else:
+        await e.respond(text, buttons=buttons)
 @ABH.on(events.CallbackQuery)
 async def settings_callback(e):
     if not can(e.sender_id):
@@ -23,6 +27,12 @@ async def settings_callback(e):
     elif data == "set_channel":
         r.hset(STATE_KEY, e.sender_id, "add_channel")
         await e.edit("📥 أرسل الآن ايدي أو يوزر القناة", buttons=[Button.inline("⬅️ إلغاء", data="back_to_settings")])
+    elif data == "show_channels":
+        channels = r.smembers(FORCED_KEY)
+        if not channels:
+            return await e.answer("⚠️ لا توجد قنوات.", alert=True)
+        text = "📌 القنوات:\n" + "\n".join([f"`{ch.decode()}`" for ch in channels])
+        await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
     elif data == "del_channel":
         channels = r.smembers(FORCED_KEY)
         if not channels:
