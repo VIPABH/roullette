@@ -4,7 +4,7 @@ wfffp = 1910015590
 owner = 7941637237
 name = {wfffp: 'ابن هاشم', owner: 'ابراهيم'}
 can = lambda user_id: user_id in [wfffp, owner]
-def mention(entity):
+async def mention(entity):
     try:
         if hasattr(entity, 'sender') and entity.sender:
             user = entity.sender
