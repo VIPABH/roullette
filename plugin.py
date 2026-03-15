@@ -1,5 +1,4 @@
 from shortcut import *
-from الاعدادات import *
 from ABH import *
 from النشر import *
 import asyncio
@@ -7,13 +6,18 @@ import asyncio
 async def start(e):
     if not e.is_private:
         return
-    # if r.sismember(BANNED_KEY, str(e.sender_id)):
-    #     return 
     uid = e.sender_id
-    ment = mention(e)
+    ment = await mention(e)
     if uid in name: 
+        buttons = [
+            [Button.inline("تعيين قناة اشتراك إجباري", data="set_channel"),
+             Button.inline("حذف قناة اشتراك إجباري", data="del_channel")],
+            [Button.inline('عرض قنوات الاشتراك', data="show_channels"),
+             Button.inline('عدد المستخدمين', data="count_users")],
+            [Button.inline('الإعدادات', data='settings')]
+        ]
         caption = f'اهلا عزيزي ({ment})، أنت حالياً في واجهة الآدمن. ماذا تريد أن تفعل؟ 👇🏾'
-        await main_settings(e, caption)
+        await e.reply(caption, buttons=buttons)        
     else:
         results = await asyncio.gather(
             *(is_in_channel(uid, ch) for ch in channels)
