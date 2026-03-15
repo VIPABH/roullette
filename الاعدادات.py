@@ -67,7 +67,7 @@ async def settings_callback(e):
                 await e.edit(msg, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
             else:
                 await e.respond(msg)
-        elif data == "ban_user":
+    elif data == "ban_user":
         r.hset(STATE_KEY, e.sender_id, "step_ban")
         await e.edit("🚫 أرسل الآن ID الشخص المراد حظره من البوت:", buttons=[Button.inline("⬅️ إلغاء", data="back_to_settings")])
     elif data == "count_users":
