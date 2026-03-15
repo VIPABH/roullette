@@ -90,11 +90,15 @@ async def inputs_handler(e):
         else:
             await e.reply("⚠️ يرجى إرسال ID صحيح (أرقام فقط).")
     elif state == "add_channel":
-        channel = e.text.strip()
-        try:
-            entity = await ABH.get_entity(channel)
-            r.sadd(FORCED_KEY, str(entity.id))
-            await e.reply(f"✅ تم إضافة القناة `{entity.id}`")
-            r.hdel(STATE_KEY, e.sender_id)
-        except Exception as ex:
-            await e.reply(f"❌ خطأ: {str(ex)}")
+            channel = e.text.strip()
+            try:
+                entity = await ABH.get_entity(channel)
+                me = await ABH.get_me()
+                permissions = await ABH.get_permissions(entity, me)
+                if not permissions.is_admin:
+                    return await e.reply("❌ **خطأ:** يجب أن يكون البوت مشرفاً داخل القناة ليتمكن من التحقق من الاشتراك الإجباري.")
+                r.sadd(FORCED_KEY, str(entity.id))
+                await e.reply(f"✅ تم إضافة القناة `{entity.title}` (ID: `{entity.id}`) بنجاح.")
+                r.hdel(STATE_KEY, e.sender_id)
+            except Exception as ex:
+                await e.reply(f"❌ **حدث خطأ:**\nتأكد أن البوت داخل القناة ولديه صلاحية مشرف.\nالتفاصيل: `{str(ex)}`")
