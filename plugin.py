@@ -1,4 +1,5 @@
 from shortcut import *
+from الاعدادات import *
 from ABH import *
 from النشر import *
 import asyncio
