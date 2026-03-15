@@ -31,7 +31,7 @@ async def settings_callback(e):
         channels = r.smembers(FORCED_KEY)
         if not channels:
             return await e.answer("⚠️ لا توجد قنوات.", alert=True)
-        text = "📌 القنوات:\n" + "\n".join([f"`{ch.decode()}`" for ch in channels])
+        text = "📌 القنوات:\n" + "\n".join([f"`{ch}`" for ch in channels])
         await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
     elif data == "del_channel":
         channels = r.smembers(FORCED_KEY)
@@ -49,22 +49,15 @@ async def settings_callback(e):
         await e.answer(f"✅ تم حذف {ch_id}", alert=True)
         await main_settings(e) 
     elif data == "list_users":
-            users = r.smembers(USERS_KEY)
-            if not users:
-                return await e.answer("⚠️ لا يوجد مستخدمين مخزنين", alert=True)
-            await e.answer("🔄 جاري تحضير القائمة...")
-            all_users = list(users) 
-            for i in range(0, len(all_users), 20):
-                chunk = all_users[i:i + 20]
-                lines = []
-                for u in chunk:
-                    user_mention = mention(u)
-                    lines.append(f"{user_mention} - `{u}`")                
-                msg = "👥 **قائمة المستخدمين (منشن - آيدي):**\n\n" + "\n".join(lines)
-                if i == 0:
-                    await e.edit(msg, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
-                else:
-                    await e.respond(msg)
+        users = r.smembers(USERS_KEY)
+        if not users:
+            return await e.answer("⚠️ لا يوجد مستخدمين مخزنين", alert=True)
+        await e.answer("🔄 جاري تحضير القائمة...")
+        all_users = list(users) 
+        msg = "📋 قائمة المستخدمين:\n"
+        for num, id in enumerate(all_users, start=1):
+            msg += f'{num}- ( {mention(id)} ) -- ( `{id}` )\n'
+        await e.edit(msg, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
     elif data == "ban_user":
         r.hset(STATE_KEY, e.sender_id, "step_ban")
         await e.edit("🚫 أرسل الآن ID الشخص المراد حظره من البوت:", buttons=[Button.inline("⬅️ إلغاء", data="back_to_settings")])
