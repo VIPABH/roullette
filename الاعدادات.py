@@ -31,7 +31,7 @@ async def settings_callback(e):
         channels = r.smembers(FORCED_KEY)
         if not channels:
             return await e.answer("⚠️ لا توجد قنوات.", alert=True)
-        text = "📌 القنوات:\n" + "\n".join([f"`{ch.decode()}`" for ch in channels])
+        text = "📌 القنوات:\n" + "\n".join([f"`{ch}`" for ch in channels])
         await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
     elif data == "del_channel":
         channels = r.smembers(FORCED_KEY)
