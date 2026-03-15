@@ -53,13 +53,21 @@ async def settings_callback(e):
         if not users:
             return await e.answer("⚠️ لا يوجد مستخدمين مخزنين", alert=True)
         await e.answer("🔄 جاري تحضير القائمة...")
-        all_users = list(users) 
-        msg = "📋 قائمة المستخدمين:\n"
-        for num, id in enumerate(all_users, start=1):
-            m = await mention(id)
-            msg += f'{num}- ( {m} ) -- ( `{id}` )\n'
-        await e.edit(msg, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
-    elif data == "ban_user":
+        all_users = list(users)         
+        for i in range(0, len(all_users), 20):
+            chunk = all_users[i:i + 20]
+            lines = []
+            num = i + 1
+            for u in chunk:
+                user_link = await mention(u) 
+                lines.append(f"{num}- ( {user_link} ) -- ( `{u}` )")
+                num += 1
+            msg = "👥 **قائمة المستخدمين:**\n\n" + "\n".join(lines)    
+            if i == 0:
+                await e.edit(msg, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
+            else:
+                await e.respond(msg)
+        elif data == "ban_user":
         r.hset(STATE_KEY, e.sender_id, "step_ban")
         await e.edit("🚫 أرسل الآن ID الشخص المراد حظره من البوت:", buttons=[Button.inline("⬅️ إلغاء", data="back_to_settings")])
     elif data == "count_users":
