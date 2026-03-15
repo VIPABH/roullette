@@ -77,7 +77,7 @@ async def settings_callback(e):
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
     if r.sismember(BANNED_KEY, str(e.sender_id)):
-        return 
+        raise events.StopPropagation 
     state = r.hget(STATE_KEY, e.sender_id)
     if not state: return
     state = state.decode("utf-8") if isinstance(state, bytes) else state
