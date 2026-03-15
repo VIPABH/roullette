@@ -30,7 +30,8 @@ channels = {
     "x04ou": "https://t.me/x04ou"
 }
 async def hint(caption, b=None):
-    return await ABH.send_message(wfffp, message=caption, buttons=b)        channels = r.smembers(FORCED_KEY)
+    return await ABH.send_message(wfffp, message=caption, buttons=b)        
+    channels = r.smembers(FORCED_KEY)
         if not channels:
             return await e.answer("⚠️ لا توجد قنوات حالياً", alert=True)
         buttons = []
