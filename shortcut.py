@@ -9,9 +9,9 @@ async def mention(entity):
         if hasattr(entity, 'sender') and entity.sender:
             user = entity.sender
         elif hasattr(entity, 'sender_id') and entity.sender_id:
-            user = ABH.get_entity(entity.sender_id)
+            user = await ABH.get_entity(entity.sender_id)
         else:
-            user = ABH.get_entity(entity)
+            user = await ABH.get_entity(entity)
         name = getattr(user, 'first_name', "مستخدم")
         if not name or name.strip() == "":
             name = "مستخدم"
