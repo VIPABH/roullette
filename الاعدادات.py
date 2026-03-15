@@ -106,5 +106,7 @@ async def inputs_handler(e):
             r.hdel(STATE_KEY, e.sender_id)
         except ValueError:
             await e.reply("❌ **خطأ:** لا يمكن العثور على القناة. تأكد من رابط القناة أو اليوزر.")
+            r.hdel(STATE_KEY, e.sender_id)
         except Exception as ex:
             await e.reply(f"❌ **خطأ غير متوقع:** `{str(ex)}`")
+            r.hdel(STATE_KEY, e.sender_id)
