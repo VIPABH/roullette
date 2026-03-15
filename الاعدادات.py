@@ -90,15 +90,21 @@ async def inputs_handler(e):
         else:
             await e.reply("⚠️ يرجى إرسال ID صحيح (أرقام فقط).")
     elif state == "add_channel":
-            channel = e.text.strip()
+        channel_input = e.text.strip()
+        try:
+            entity = await ABH.get_entity(channel_input)
+            me = await ABH.get_me()
             try:
-                entity = await ABH.get_entity(channel)
-                me = await ABH.get_me()
-                permissions = await ABH.get_permissions(entity, me)
-                if not permissions.is_admin:
-                    return await e.reply("❌ **خطأ:** يجب أن يكون البوت مشرفاً داخل القناة ليتمكن من التحقق من الاشتراك الإجباري.")
-                r.sadd(FORCED_KEY, str(entity.id))
-                await e.reply(f"✅ تم إضافة القناة `{entity.title}` (ID: `{entity.id}`) بنجاح.")
-                r.hdel(STATE_KEY, e.sender_id)
-            except Exception as ex:
-                await e.reply(f"❌ **حدث خطأ:**\nتأكد أن البوت داخل القناة ولديه صلاحية مشرف.\nالتفاصيل: `{str(ex)}`")
+                participant = await ABH.get_participant(entity, me)
+            except Exception:
+                return await e.reply("❌ **خطأ:** البوت ليس عضواً في القناة. أضف البوت للقناة أولاً!")
+            permissions = await ABH.get_permissions(entity, me)
+            if not permissions.is_admin:
+                return await e.reply("❌ **خطأ:** البوت ليس مشرفاً في القناة. ارفعه مشرفاً ثم حاول مجدداً.")
+            r.sadd(FORCED_KEY, str(entity.id))
+            await e.reply(f"✅ تم إضافة القناة `{getattr(entity, 'title', 'القناة')}` (ID: `{entity.id}`) للاشتراك الإجباري.")
+            r.hdel(STATE_KEY, e.sender_id)
+        except ValueError:
+            await e.reply("❌ **خطأ:** لا يمكن العثور على القناة. تأكد من رابط القناة أو اليوزر.")
+        except Exception as ex:
+            await e.reply(f"❌ **خطأ غير متوقع:** `{str(ex)}`")
