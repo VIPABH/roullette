@@ -35,3 +35,15 @@ channels = {
 }
 async def hint(caption, b=None):
     return await ABH.send_message(wfffp, message=caption, buttons=b)
+async def main_settings(e, caption=None):
+    buttons = [
+        [Button.inline("➕ إضافة قناة", data="set_channel"), Button.inline("🗑 حذف قناة", data="del_channel")],
+        [Button.inline("📋 عرض القنوات", data="show_channels"), Button.inline("📊 الإحصائيات", data="count_users")],
+        [Button.inline("👥 قائمة المستخدمين", data="list_users"), Button.inline("🚫 حظر مستخدم", data="ban_user")],
+        [Button.inline("⚙️ إنهاء الجلسة", data="del_add_session")]
+    ]
+    text = "🛠 **إعدادات البوت والتحكم:**" if caption is None else caption
+    if hasattr(e, 'edit') and not isinstance(e, events.NewMessage.Event):
+        await e.edit(text, buttons=buttons)
+    else:
+        await e.respond(text, buttons=buttons)
