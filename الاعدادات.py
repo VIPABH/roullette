@@ -5,18 +5,6 @@ STATE_KEY = "channels"
 FORCED_KEY = "forced_channels"
 BANNED_KEY = "banned_users"
 USERS_KEY = "save_users"
-async def main_settings(e, caption=None):
-    buttons = [
-        [Button.inline("➕ إضافة قناة", data="set_channel"), Button.inline("🗑 حذف قناة", data="del_channel")],
-        [Button.inline("📋 عرض القنوات", data="show_channels"), Button.inline("📊 الإحصائيات", data="count_users")],
-        [Button.inline("👥 قائمة المستخدمين", data="list_users"), Button.inline("🚫 حظر مستخدم", data="ban_user")],
-        [Button.inline("⚙️ إنهاء الجلسة", data="del_add_session")]
-    ]
-    text = "🛠 **إعدادات البوت والتحكم:**" if caption is None else caption
-    if hasattr(e, 'edit') and not isinstance(e, events.NewMessage.Event):
-        await e.edit(text, buttons=buttons)
-    else:
-        await e.respond(text, buttons=buttons)
 @ABH.on(events.CallbackQuery)
 async def settings_callback(e):
     if not can(e.sender_id):
