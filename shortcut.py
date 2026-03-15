@@ -1,5 +1,6 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from ABH import *
+import asyncio
 wfffp = 1910015590
 owner = 7941637237
 name = {wfffp: 'ابن هاشم', owner: 'ابراهيم'}
@@ -20,6 +21,9 @@ async def mention(entity):
         return "مستخدم"
     except:
         return "مستخدم"
+async def ment(ids_list: list):
+    tasks = [mention(u) for u in ids_list]
+    return await asyncio.gather(*tasks)
 async def is_in_channel(user_id, channel_username):
     try:
         return await ABH(GetParticipantRequest(channel_username, user_id))
