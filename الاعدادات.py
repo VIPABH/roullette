@@ -8,9 +8,9 @@ USERS_KEY = "save_users"
 async def main_settings(e, caption=None):
     buttons = [
         [Button.inline("➕ إضافة قناة", data="set_channel"), Button.inline("🗑 حذف قناة", data="del_channel")],
-        [Button.inline("📋 القنوات", data="show_channels"), Button.inline("📊 الإحصائيات", data="count_users")],
-        [Button.inline("🛡 التحكم بالحظر", data="ban_menu")], 
-        [Button.inline("👥 قائمة المستخدمين", data="list_users"), Button.inline("⚙️ إنهاء", data="del_add_session")]
+        [Button.inline("📋 عرض القنوات", data="show_channels"), Button.inline("📊 الإحصائيات", data="count_users")],
+        [Button.inline("👥 قائمة المستخدمين", data="list_users"), Button.inline("🚫 حظر مستخدم", data="ban_user")],
+        [Button.inline("⚙️ إنهاء الجلسة", data="del_add_session")]
     ]
     text = "🛠 **إعدادات البوت والتحكم:**" if caption is None else caption
     if hasattr(e, 'edit') and not isinstance(e, events.NewMessage.Event):
@@ -31,7 +31,7 @@ async def settings_callback(e):
         channels = r.smembers(FORCED_KEY)
         if not channels:
             return await e.answer("⚠️ لا توجد قنوات.", alert=True)
-        text = "📌 القنوات:\n" + "\n".join([f"`{ch}`" for ch in channels])
+        text = "📌 القنوات:\n" + "\n".join([f"`{ch.decode()}`" for ch in channels])
         await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
     elif data == "del_channel":
         channels = r.smembers(FORCED_KEY)
@@ -49,15 +49,22 @@ async def settings_callback(e):
         await e.answer(f"✅ تم حذف {ch_id}", alert=True)
         await main_settings(e) 
     elif data == "list_users":
-        users = r.smembers(USERS_KEY)
-        if not users:
-            return await e.answer("⚠️ لا يوجد مستخدمين مخزنين", alert=True)
-        await e.answer("🔄 جاري تحضير القائمة...")
-        all_users = [u for u in users]        
-        for i in range(0, len(all_users), 50):
-            chunk = all_users[i:i + 50]
-            msg = "👥 **قائمة المستخدمين:**\n\n" + "\n".join([f"`{u}`" for u in chunk])
-            await e.respond(msg)
+            users = r.smembers(USERS_KEY)
+            if not users:
+                return await e.answer("⚠️ لا يوجد مستخدمين مخزنين", alert=True)
+            await e.answer("🔄 جاري تحضير القائمة...")
+            all_users = list(users) 
+            for i in range(0, len(all_users), 20):
+                chunk = all_users[i:i + 20]
+                lines = []
+                for u in chunk:
+                    user_mention = mention(u)
+                    lines.append(f"{user_mention} - `{u}`")                
+                msg = "👥 **قائمة المستخدمين (منشن - آيدي):**\n\n" + "\n".join(lines)
+                if i == 0:
+                    await e.edit(msg, buttons=[Button.inline("⬅️ عودة", data="back_to_settings")])
+                else:
+                    await e.respond(msg)
     elif data == "ban_user":
         r.hset(STATE_KEY, e.sender_id, "step_ban")
         await e.edit("🚫 أرسل الآن ID الشخص المراد حظره من البوت:", buttons=[Button.inline("⬅️ إلغاء", data="back_to_settings")])
@@ -67,26 +74,10 @@ async def settings_callback(e):
     elif data == "del_add_session":
         r.hdel(STATE_KEY, e.sender_id)
         await e.edit("✅ تم إنهاء الجلسة.", buttons=[Button.inline("⬅️ القائمة الرئيسية", data="back_to_settings")])
-    elif data == "ban_menu":
-        buttons = [
-            [Button.inline("🚫 حظر مستخدم", data="ban_user"), Button.inline("✅ إلغاء حظر", data="unban_user")],
-            [Button.inline("📋 عرض المحظورين", data="show_banned")],
-            [Button.inline("⬅️ عودة للقائمة", data="back_to_settings")]
-        ]
-        await e.edit("🛡 **قائمة التحكم بالحظر:**", buttons=buttons)
-    elif data == "show_banned":
-        banned = r.smembers(BANNED_KEY)
-        if not banned:
-            return await e.answer("✅ لا يوجد أشخاص محظورون حالياً.", alert=True)
-        text = "🚫 **قائمة المحظورين:**\n\n" + "\n".join([f"`{u}`" for u in banned])
-        await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="ban_menu")])
-    elif data == "unban_user":
-        r.hset(STATE_KEY, e.sender_id, "step_unban")
-        await e.edit("✅ أرسل الآن ID الشخص المراد إلغاء حظره:", buttons=[Button.inline("⬅️ إلغاء", data="ban_menu")])
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
-    # if r.sismember(BANNED_KEY, str(e.sender_id)):
-    #     return 
+    if r.sismember(BANNED_KEY, str(e.sender_id)):
+        return 
     state = r.hget(STATE_KEY, e.sender_id)
     if not state: return
     state = state.decode("utf-8") if isinstance(state, bytes) else state
@@ -107,11 +98,3 @@ async def inputs_handler(e):
             r.hdel(STATE_KEY, e.sender_id)
         except Exception as ex:
             await e.reply(f"❌ خطأ: {str(ex)}")
-    elif state == "step_unban":
-        user_id = e.text.strip()
-        if user_id.isdigit():
-            r.srem(BANNED_KEY, user_id)
-            await e.reply(f"✅ تم إلغاء حظر المستخدم `{user_id}` بنجاح.")
-            r.hdel(STATE_KEY, e.sender_id)
-        else:
-            await e.reply("⚠️ يرجى إرسال ID صحيح.")
