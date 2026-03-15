@@ -43,7 +43,7 @@ async def settings_callback(e):
         if not users:
             return await e.answer("⚠️ لا يوجد مستخدمين مخزنين", alert=True)
         await e.answer("🔄 جاري تحضير القائمة...")
-        all_users = [u.decode("utf-8") for u in users]        
+        all_users = [u for u in users]        
         for i in range(0, len(all_users), 50):
             chunk = all_users[i:i + 50]
             msg = "👥 **قائمة المستخدمين:**\n\n" + "\n".join([f"`{u}`" for u in chunk])
