@@ -11,7 +11,7 @@ async def sign_users(e):
         )
         caption = f"""
 تم تفعيل البوت بواسطة
-المستخدم {mention(e)}
+المستخدم {await mention(e)}
 ايديه `{user_id}`
 """
     else:
