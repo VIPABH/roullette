@@ -3,6 +3,7 @@ from plugin import *
 from التخزين import *
 from النشر import *
 from الاعدادات import *
+from ai import *
 async def main():
     try:
         r.ping()
