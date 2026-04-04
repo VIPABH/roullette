@@ -32,8 +32,8 @@ ask = {}
 @ABH.on(events.NewMessage(pattern='^ميكارو'))
 async def mikaru(e):
     id = e.sender_id
-    if not can(id): 
-        return await e.reply("لا تستطيع استخدام هذا الامر\n جرب ترسل `/start` بالخاص")    
+    # if not can(id): 
+    #     return await e.reply("لا تستطيع استخدام هذا الامر\n جرب ترسل `/start` بالخاص")    
     t = e.text
     if t == "ميكارو":
         await e.respond("🙂")
