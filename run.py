@@ -4,7 +4,6 @@ from التخزين import *
 from النشر import *
 from الاعدادات import *
 from ai import *
-save_data(owner), save_data(wfffp)
 async def main():
     try:
         r.ping()
