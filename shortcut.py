@@ -47,3 +47,4 @@ async def main_settings(e, caption=None):
         await e.edit(text, buttons=buttons)
     else:
         await e.respond(text, buttons=buttons)
+unicode = "\u200f"
