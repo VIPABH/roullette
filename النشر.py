@@ -4,21 +4,21 @@ from shortcut import *
 from ABH import *
 async def sign_users(e):
     if e.is_private:
-        user_id = e.sender_id
+        id = e.sender_id
         b = Button.url(
             "بروفايلة",
-            f"tg://user?id={user_id}"
+            f"tg://user?id={id}"
         )
         caption = f"""
 تم تفعيل البوت بواسطة
 المستخدم {await mention(e)}
-ايديه `{user_id}`
+ايديه `{id}`
 """
     else:
         if e.chat.username:
             group_link = f"https://t.me/{e.chat.username}"
         else:
-            group = await e.client.get_entity(e.chat_id)
+            group = await e.client.get_entity(id)
             full = await e.client(ExportChatInviteRequest(
                 peer=group
             ))
@@ -27,9 +27,9 @@ async def sign_users(e):
         caption = f"""
 تم تشغيل البوت داخل المجموعة
 {e.chat.title}
-ايدي المجموعة `{e.chat_id}`
+ايدي المجموعة `{id}`
 """
     data = load_data()
-    if str(e.chat_id) not in data:
-        save_data(e.chat_id)
+    if str(id) not in data:
+        save_data(id)
         await hint(caption, b)
