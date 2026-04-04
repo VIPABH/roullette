@@ -7,8 +7,8 @@ BANNED_KEY = "banned_users"
 USERS_KEY = "save_users"
 @ABH.on(events.CallbackQuery)
 async def settings_callback(e):
-    if not isprof(e.sender_id):
-        return await e.answer("ليس لك صلاحية", alert=True)
+    # if not isprof(e.sender_id):
+    #     return await e.answer("ليس لك صلاحية", alert=True)
     data = e.data.decode("utf-8")
     if data == "back_to_settings":
         await main_settings(e)
