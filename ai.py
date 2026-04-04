@@ -24,34 +24,43 @@ async def ask_makhfi_ai(prompt):
             return "عيني هواي أسئلة جايتني حالياً! اصبرلي ثواني وارجع اسألني. ⏳"
         return f"صار عندي خلل فني بسيط: {str(e)}"
 globalbutton = lambda id: [
-    Button.inline("ذكاء عادي", data=f"ai:{id}"),
-    Button.inline("ذكاء ومصادر", data=f"ai-serach:{id}"),
-    Button.inline("بحث يوتيوب", data=f"ai-youtube:{id}"),
-    Button.inline("بحث تيكتوك", data=f"ai-google:{id}"),
-    Button.inline("مصادر اخرى", data=f"other-ai:{id}"),
+    [Button.inline("ذكاء عادي", data=f"ai:{id}"), Button.inline("ذكاء ومصادر", data=f"ai-serach:{id}")],
+    [Button.inline("بحث يوتيوب", data=f"ai-youtube:{id}"), Button.inline("بحث تيكتوك", data=f"ai-google:{id}")],
+    [Button.inline("مصادر اخرى", data=f"other-ai:{id}")]
 ]
 ask = {}
 @ABH.on(events.NewMessage(pattern='^ميكارو'))
 async def mikaru(e):
     id = e.sender_id
-    if not can(id): return await e.reply("لا تستطيع استخدام هذا الامر\n جرب ترسل `/start` بالخاص")
+    if not can(id): 
+        return await e.reply("لا تستطيع استخدام هذا الامر\n جرب ترسل `/start` بالخاص")    
     t = e.text
     if t == "ميكارو":
         await e.respond("🙂")
     else:
-        x = t.replace('ميكارو', '')
+        query = t.replace('ميكارو', '').strip()
+        if not query:
+            return await e.reply("عيني أرسل السؤال ويه كلمة ميكارو.")
         b = globalbutton(id)
-        await e.reply(f"البحث عن **{x}ّ**:", buttons=b)
-        ask[id] = x
+        await e.reply(f"البحث عن **{query}**:", buttons=b)
+        ask[id] = query
 @ABH.on(events.CallbackQuery(pattern=rb'^(ai|ai-serach|ai-youtube|ai-google|other-ai):(.*)'))
-async def ai(e):
+async def ai_callback(e):
     id = e.sender_id
-    if not can(id): return await e.answer("لا تستطيع استخدام هذا الامر\n جرب ترسل `/start` بالخاص")
     data_parts = e.data.decode('utf-8').split(':')
     ai_type = data_parts[0]
-    user_id = data_parts[1]
-    if id != int(user_id): return await e.answer("الامر ما يخصك")
+    user_id = int(data_parts[1])
+    if not can(id): 
+        return await e.answer("لا تستطيع استخدام هذا الامر.", alert=True)
+    if id != user_id: 
+        return await e.answer("هذا البحث مو إلك عيني! ✋", alert=True)
+    user_query = ask.get(id)
+    if not user_query:
+        return await e.edit("عيني انتهت الجلسة، ارجع أرسل السؤال من جديد.")
     if ai_type == "ai":
-        await e.answer("جاري التحميل..."), await e.edit("الذكاء عادي")
-    ai_response = await ask_makhfi_ai(ask[id])    
-    await e.edit(f"**مخفي يقول لك:**\n\n{ai_response}\n\n---\nبخدمتكم - مطور البوت: ابن هاشم")
+        await e.answer("جاري التفكير... 🧠")
+        await e.edit(f"⏳ جاري معالجة: **{user_query}**")
+        ai_response = await ask_makhfi_ai(user_query)        
+        await e.edit(f"**مخفي يقول لك:**\n\n{ai_response}\n\n---\nبخدمتكم - مطور البوت: ابن هاشم")
+    else:
+        await e.answer("هذا القسم (البحث) قيد التطوير حالياً.. قريباً يكمل! 🛠", alert=True)
