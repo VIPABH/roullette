@@ -5,6 +5,7 @@ wfffp = 1910015590
 owner = 575441333
 name = {wfffp: 'ابن هاشم', owner: 'احمد'}
 can = lambda user_id: user_id in r.smembers("save_users")
+isprof = lambda user_id: user_id in (wfffp, owner)
 async def mention(entity):
     try:
         if hasattr(entity, 'sender') and entity.sender:
