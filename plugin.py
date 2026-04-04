@@ -25,7 +25,16 @@ async def start(e):
                 buttons=buttons
             )
         else:
-            await e.reply("✅ تم التحقق من اشتراكك في جميع القنوات. أهلاً بك!")
-    users = load_data()
-    if str(e.chat_id) not in users:
-        await sign_users(e)
+            await e.reply(f"اهلا اخي ( {await mention(e)} ) حياك الله \n اني ميكارو مساعدك المجاني في بوابة الذكاء الصناعي\n تكدر تستخدمني بالكروبات وبالخاص شوكت ما تحتاج شيء راح تلكاني يمك \n \help")
+            users = load_data()
+            if str(e.sender_id) not in users:
+                await sign_users(e)
+@ABH.on(events.NewMessage(pattern="^/help$"))
+async def help(e):
+    await e.reply(f"""
+اهلا صديقي ( {await mention(e)} )
+اوامر البوت كآلاتي
+1 ↔ /start لتفعيل البوت بالطريقة الصحيحه
+2 ↔ `تسجيل الدخول` للوصول الى معلوماتك في البوت
+3 ↔ `اوامر الذكاء` ل استعراض كل الاوامر التي يمكنك استخدامها في البوت
+""")
