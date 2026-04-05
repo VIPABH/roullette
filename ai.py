@@ -82,28 +82,27 @@ def search_youtube(query):
         results = list(ddgs.videos(f"site:youtube.com {query}", max_results=3))
         if results:
             context = ""
+            links = "\n\n**📺 المصادر (يوتيوب):**"
             for i, r in enumerate(results, 1):
-                context += f"فيديو {i}:\nالعنوان: {r['title']}\nالرابط: {r['content']}\nالوصف: {r.get('description', 'لا يوجد وصف')}\n\n"
-            return context
-    return ""
+                context += f"فيديو {i}: العنوان: {r['title']}, الوصف: {r.get('description', 'لا يوجد وصف')}\n"
+                links += f"\n{i}. [{r['title']}]({r['content']})"
+            return context, links
+    return "", ""
 @ABH.on(events.NewMessage(pattern=r"^يوتيوب(\s+.*|$)"))
 async def youtube_handler(event):
     query = event.pattern_match.group(1).strip()
     if not query:
-        return await event.reply("گولي شنو تريد أبحثلك عنه باليوتيوب؟ مثلاً: `يوتيوب تعلم البرمجة`")
+        return await event.reply("گولي شنو تريد أبحثلك عنه باليوتيوب؟ مثلاً: `يوتيوب شرح بايثون`")
     async with event.client.action(event.chat_id, "typing"):
-        yt_context = search_youtube(query)
+        yt_context, yt_links = search_youtube(query)        
         if yt_context:
             prompt = (
-                f"أنت خبير محتوى يوتيوب. إليك نتائج البحث عن '{query}':\n\n{yt_context}\n"
-                "المطلوب منك صياغة النتيجة لكل فيديو بهذا الشكل الحرفي وباللهجة العراقية:\n\n"
-                "اسم الفيديو (بشكل مختصر)\n"
-                "\"الشرح\"\n"
-                "الوصف المختصر (نقطة واحدة ذكية)\n"
-                "[(الرابط)](رابط الفيديو)\n\n"
-                "تأكد من وضع مسافة بين كل فيديو وفيديو ليظهر التنسيق مرتباً."
+                f"إليك نتائج بحث من يوتيوب حول '{query}':\n{yt_context}\n\n"
+                "لخص لي أهم المعلومات الموجودة في هذه النتائج بلهجة عراقية "
+                "وبين لي الفائدة من كل فيديو بشكل مختصر."
             )            
-            ai_res = await ask_ai(prompt)
-            await event.reply(ai_res, link_preview=False)
+            ai_summary = await ask_ai(prompt)
+            final_response = f"**🎬 نتائج البحث والتلخيص من يوتيوب:**\n\n{ai_summary}{yt_links}"
+            await event.reply(final_response, link_preview=False)
         else:
-            await event.reply("والله دورت بس ما طلع عندي شي بخصوص هذا البحث. 😕")
+            await event.reply("والله بحثت بس ما لگيت فيديوهات مناسبة لهل موضوع حالياً. 😕")
