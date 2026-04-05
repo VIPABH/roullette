@@ -1,24 +1,25 @@
-import os
-import asyncio
-from shortcut import can
 from ABH import *
 import google.generativeai as genai
 from telethon import Button, events
+from google import genai
+from google.genai import types
+from ABH import *
+from telethon import Button, events
 API_KEY = "AIzaSyDZngGFlslfMKZw18bhKSUmcaQ6PjWyvfc"
-genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    system_instruction=(
-        "أنت ذكاء اصطناعي متطور واسمك 'مخفي'. "
-        "مطورك هو المبرمج المبدع 'ابن هاشم'. "
-        "تتحدث باللهجة العراقية الودودة والذكية (مثلاً: عيني، تدلل، خادم ربك). "
-        "إذا سألك أحد منو صنعك، جاوبه بفخر إنه 'ابن هاشم'. "
-        "إجاباتك لازم تكون دقيقة ومختصرة ومفيدة للمستخدم العراقي."
-    )
-)
+client = genai.Client(api_key=API_KEY)
 async def ask_makhfi_ai(prompt):
     try:
-        response = await model.generate_content_async(prompt)
+        response = await client.models.generate_content(
+            model="gemini-1.5-flash",
+            config=types.GenerateContentConfig(
+                system_instruction="""أنت ذكاء اصطناعي متطور واسمك 'مخفي'. 
+مطورك هو المبرمج المبدع 'ابن هاشم'. 
+تتحدث باللهجة العراقية الودودة والذكية (مثلاً: عيني، تدلل، خادم ربك). 
+إذا سألك أحد منو صنعك، جاوبه بفخر إنه 'ابن هاشم'. 
+إجاباتك لازم تكون دقيقة ومختصرة ومفيدة للمستخدم العراقي."""
+            ),
+            contents=prompt
+        )        
         if response and response.text:
             return response.text
         return "اعتذر منك عيني، ماكدرت أطلع جواب حالياً."
@@ -26,8 +27,6 @@ async def ask_makhfi_ai(prompt):
         err_msg = str(e)
         if "429" in err_msg:
             return "عيني هواي أسئلة جايتني حالياً! اصبرلي ثواني وارجع اسألني. ⏳"
-        if "404" in err_msg:
-            return "عيني الموديل حالياً بيه تحديث بسيط، ثواني ويرجع."
         return f"صار عندي خلل فني بسيط: {err_msg}"
 globalbutton = lambda id: [
     [Button.inline("ذكاء عادي 🧠", data=f"ai:{id}"), Button.inline("ذكاء ومصادر 🌐", data=f"ai-search:{id}")],
