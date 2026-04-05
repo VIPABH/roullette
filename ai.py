@@ -4,16 +4,43 @@ from datetime import datetime
 from ddgs import DDGS
 import httpx
 def search_web(query):
-    with DDGS() as ddgs:
-        results = list(ddgs.text(query, max_results=3))
-        if results:
-            context = ""
-            links = "\n\n**🌐 المصادر والنتائج المتقدمة:**"
-            for i, r in enumerate(results, 1):
-                context += f"[{i}] {r['body']}\n"
-                links += f"\n{i}. [{r['title']}]({r['href']})"
-            return context, links
+    try:
+        with DDGS() as ddgs:
+            results = list(ddgs.text(query, max_results=3))
+            if results:
+                context = ""
+                links = "\n\n**🌐 المصادر والنتائج المتقدمة:**"
+                for i, r in enumerate(results, 1):
+                    context += f"[{i}] {r['body']}\n"
+                    links += f"\n{i}. [{r['title']}]({r['href']})"
+                return context, links
+    except:
+        pass
     return "", ""
+def search_youtube(query):
+    try:
+        with DDGS() as ddgs:
+            results = list(ddgs.videos(f"site:youtube.com {query}", max_results=3))
+            if results:
+                context = ""
+                for i, r in enumerate(results, 1):
+                    context += f"فيديو {i}:\nالعنوان: {r['title']}\nالرابط: {r['content']}\nالوصف: {r.get('description', 'لا يوجد وصف')}\n\n"
+                return context
+    except:
+        pass
+    return ""
+def search_tiktok(query):
+    try:
+        with DDGS() as ddgs:
+            results = list(ddgs.text(f"site:tiktok.com {query}", max_results=3))
+            if results:
+                context = ""
+                for i, r in enumerate(results, 1):
+                    context += f"مقطع {i}:\nالعنوان: {r['title']}\nالرابط: {r['href']}\nالوصف: {r.get('body', 'لا يوجد وصف')}\n\n"
+                return context
+    except:
+        pass
+    return ""
 AI_SECRET = "AIChatPowerBrain123@2024"
 API_URL = "https://powerbrainai.com/app/backend/api/api.php"
 async def ask_ai(q, web_info=None):
@@ -28,7 +55,8 @@ async def ask_ai(q, web_info=None):
     )
     full_prompt = q
     if web_info:
-        full_prompt = f"المعلومات المجلوبة من الويب (حديثة):\n{web_info}\n\nالسؤال: {q}\nاجب بناءً على المعلومات أعلاه بلهجة عراقية."
+        full_prompt = f"المعلومات المجلوبة (حديثة):\n{web_info}\n\nالسؤال: {q}\nاجب بناءً على المعلومات أعلاه بلهجة عراقية."
+
     headers = {
         "User-Agent": "Dart/3.3 (dart:io)",
         "content-type": "application/json; charset=utf-8"
@@ -47,66 +75,52 @@ async def ask_ai(q, web_info=None):
             res = await client.post(API_URL, headers=headers, json=data, timeout=20.0)
             if res.status_code == 200:
                 response_data = res.json().get("data", "")
-                if response_data:
-                    return response_data
-                return "ماكو رد واضح من السيرفر، جرب مرة ثانية."
+                return response_data if response_data else "ماكو رد واضح من السيرفر، جرب مرة ثانية."
             return "السيرفر حالياً ثقيل، ثواني وارجع جرب."
     except Exception as e:
         return f"صار خطأ تقني: {str(e)}"
 @ABH.on(events.NewMessage(pattern=r"^ميكارو(\s+.*|$)"))
 async def bot_handler(event):
     user_q = event.pattern_match.group(1).strip()    
-    if not user_q:
-        return await event.reply("🙂")
+    if not user_q: return await event.reply("🙂")
     async with event.client.action(event.chat_id, "typing"):
         ai_res = await ask_ai(user_q)
         buttons = [Button.inline("🔍 بحث عميق بمصادر الويب", data=f"search_{event.id}")]
         await event.reply(ai_res, buttons=buttons)
-@ABH.on(events.CallbackQuery(pattern=r"search_(\d+)"))
-async def search_callback(event):
-    msg = await event.get_message()
-    if not msg.reply_to_msg_id:
-        return await event.answer("ما گدرت ألقى السؤال الأصلي.", alert=True)
-    original_msg = await msg.get_reply_message()
-    query = original_msg.text.replace("مخفي", "").strip()
-    await event.edit("**جاري البحث في الويب وتحليل البيانات... 🔎**")    
-    web_info, sources = search_web(query)    
-    if web_info:
-        advanced_res = await ask_ai(query, web_info=web_info)
-        final_text = f"**📌 نتيجة البحث المتقدم:**\n\n{advanced_res}\n\n{sources}"
-        await event.edit(final_text, buttons=None, link_preview=False)
-    else:
-        await event.answer("ما لگيت نتائج إضافية مفيدة بالويب.", alert=True)
-def search_youtube(query):
-    with DDGS() as ddgs:
-        results = list(ddgs.videos(f"site:youtube.com {query}", max_results=3))
-        if results:
-            context = ""
-            for i, r in enumerate(results, 1):
-                context += f"فيديو {i}:\nالعنوان: {r['title']}\nالرابط: {r['content']}\nالوصف: {r.get('description', 'لا يوجد وصف')}\n\n"
-            return context
-    return ""
 @ABH.on(events.NewMessage(pattern=r"^يوتيوب(\s+.*|$)"))
 async def youtube_handler(event):
     query = event.pattern_match.group(1).strip()
-    if not query:
-        return await event.reply("گولي شنو تريد أبحثلك عنه باليوتيوب؟ مثلاً: `يوتيوب تعلم البرمجة`")
+    if not query: return await event.reply("شنو تريد أبحثلك باليوتيوب؟")
     async with event.client.action(event.chat_id, "typing"):
-        yt_context = search_youtube(query)        
+        yt_context = search_youtube(query)
         if yt_context:
-            prompt = (
-                f"أنت الآن خبير يوتيوب. إليك نتائج بحث عن '{query}':\n\n{yt_context}\n"
-                "المطلوب منك:\n"
-                "1. لخص كل فيديو بنقطة واحدة مختصرة جداً وباللهجة العراقية.\n"
-                "2. ضع كلمة (الرابط) أسفل كل وصف وتكون عبارة عن هايبرلنك يوجه للفيديو.\n"
-                "3. اجعل الأسلوب ذكي ومرتب.\n"
-                "مثال للتنسيق:\n"
-                "• [عنوان الفيديو]\n"
-                "وصف مختصر هنا...\n"
-                "[(الرابط)](رابط الفيديو)"
-            )            
+            prompt = f"إليك نتائج يوتيوب عن '{query}':\n\n{yt_context}\nصغ النتيجة لكل فيديو بهذا الشكل:\nاسم الفيديو (مختصر)\n\"الشرح\"\nالوصف المختصر (بالعراقي)\n[(الرابط)](رابط الفيديو)"
             ai_res = await ask_ai(prompt)
-            final_response = f"**🎬 نتائج بحث يوتيوب الذكية:**\n\n{ai_res}"
-            await event.reply(final_response, link_preview=False)
+            await event.reply(ai_res, link_preview=False)
         else:
-            await event.reply("ما لگيت نتائج يوتيوب مناسبة لهل بحث. 😕")
+            await event.reply("ماكو نتائج يوتيوب حالياً. 😕")
+@ABH.on(events.NewMessage(pattern=r"^تيكتوك(\s+.*|$)"))
+async def tiktok_handler(event):
+    query = event.pattern_match.group(1).strip()
+    if not query: return await event.reply("شنو تريد أبحثلك بالتيكتوك؟")
+    async with event.client.action(event.chat_id, "typing"):
+        tk_context = search_tiktok(query)
+        if tk_context:
+            prompt = f"إليك نتائج تيكتوك عن '{query}':\n\n{tk_context}\nصغ النتيجة لكل فيديو بهذا الشكل:\nاسم المقطع (مختصر)\n\"الشرح\"\nالوصف المختصر (بالعراقي)\n[(الرابط)](رابط الفيديو)"
+            ai_res = await ask_ai(prompt)
+            await event.reply(ai_res, link_preview=False)
+        else:
+            await event.reply("ماكو نتائج تيكتوك حالياً. 😕")
+@ABH.on(events.CallbackQuery(pattern=r"search_(\d+)"))
+async def search_callback(event):
+    msg = await event.get_message()
+    if not msg.reply_to_msg_id: return await event.answer("ما لگيت السؤال الأصلي.", alert=True)
+    original_msg = await msg.get_reply_message()
+    query = original_msg.text.replace("ميكارو", "").strip()
+    await event.edit("**جاري البحث العميق... 🔎**")    
+    web_info, sources = search_web(query)    
+    if web_info:
+        advanced_res = await ask_ai(query, web_info=web_info)
+        await event.edit(f"**📌 نتيجة البحث المتقدم:**\n\n{advanced_res}\n\n{sources}", link_preview=False)
+    else:
+        await event.answer("ماكو نتائج إضافية بالويب.", alert=True)
