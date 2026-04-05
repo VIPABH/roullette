@@ -1,9 +1,8 @@
 from ABH import *
 from telethon import Button, events
 from datetime import datetime
-from ddg3 import DDGS
+from ddgs import DDGS
 import httpx
-
 def search_web(query):
     with DDGS() as ddgs:
         results = list(ddgs.text(query, max_results=3))
@@ -107,4 +106,3 @@ async def youtube_handler(event):
             await event.reply(final_response, link_preview=False)
         else:
             await event.reply("والله بحثت بس ما لگيت فيديوهات مناسبة لهل موضوع حالياً. 😕")
-            
