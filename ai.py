@@ -1,6 +1,9 @@
+import os
+import asyncio
 from shortcut import can
 from ABH import *
 import google.generativeai as genai
+from telethon import Button, events
 API_KEY = "AIzaSyDZngGFlslfMKZw18bhKSUmcaQ6PjWyvfc"
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel(
@@ -20,47 +23,49 @@ async def ask_makhfi_ai(prompt):
             return response.text
         return "اعتذر منك عيني، ماكدرت أطلع جواب حالياً."
     except Exception as e:
-        if "429" in str(e):
+        err_msg = str(e)
+        if "429" in err_msg:
             return "عيني هواي أسئلة جايتني حالياً! اصبرلي ثواني وارجع اسألني. ⏳"
-        return f"صار عندي خلل فني بسيط: {str(e)}"
+        if "404" in err_msg:
+            return "عيني الموديل حالياً بيه تحديث بسيط، ثواني ويرجع."
+        return f"صار عندي خلل فني بسيط: {err_msg}"
 globalbutton = lambda id: [
-    [Button.inline("ذكاء عادي", data=f"ai:{id}"), Button.inline("ذكاء ومصادر", data=f"ai-serach:{id}")],
-    [Button.inline("بحث يوتيوب", data=f"ai-youtube:{id}"), Button.inline("بحث تيكتوك", data=f"ai-google:{id}")],
-    [Button.inline("مصادر اخرى", data=f"other-ai:{id}")]
+    [Button.inline("ذكاء عادي 🧠", data=f"ai:{id}"), Button.inline("ذكاء ومصادر 🌐", data=f"ai-search:{id}")],
+    [Button.inline("بحث يوتيوب 🎬", data=f"ai-youtube:{id}"), Button.inline("بحث تيكتوك 📱", data=f"ai-google:{id}")],
+    [Button.inline("مصادر اخرى 📂", data=f"other-ai:{id}")]
 ]
 ask = {}
 @ABH.on(events.NewMessage(pattern='^ميكارو'))
 async def mikaru(e):
-    id = e.sender_id
-    # if not can(id): 
+    user_id = e.sender_id    
+    # if not can(user_id): 
     #     return await e.reply("لا تستطيع استخدام هذا الامر\n جرب ترسل `/start` بالخاص")    
-    t = e.text
-    if t == "ميكارو":
-        await e.respond("🙂")
+    text = e.text
+    if text == "ميكارو":
+        await e.respond("🙂 تؤمرني بشيء؟ أرسل سؤالك ويه كلمة ميكارو.")
     else:
-        query = t.replace('ميكارو', '').strip()
+        query = text.replace('ميكارو', '').strip()
         if not query:
             return await e.reply("عيني أرسل السؤال ويه كلمة ميكارو.")
-        b = globalbutton(id)
-        await e.reply(f"البحث عن **{query}**:", buttons=b)
-        ask[id] = query
-@ABH.on(events.CallbackQuery(pattern=rb'^(ai|ai-serach|ai-youtube|ai-google|other-ai):(.*)'))
+        ask[user_id] = query
+        buttons = globalbutton(user_id)
+        await e.reply(f"البحث عن: **{query}**\n\nاختار نوع الذكاء اللي تريده:", buttons=buttons)
+@ABH.on(events.CallbackQuery(pattern=rb'^(ai|ai-search|ai-youtube|ai-google|other-ai):(.*)'))
 async def ai_callback(e):
-    id = e.sender_id
+    sender_id = e.sender_id
     data_parts = e.data.decode('utf-8').split(':')
     ai_type = data_parts[0]
-    user_id = int(data_parts[1])
-    # if not can(id): 
-    #     return await e.answer("لا تستطيع استخدام هذا الامر.", alert=True)
-    if id != user_id: 
+    target_user_id = int(data_parts[1])
+    if sender_id != target_user_id: 
         return await e.answer("هذا البحث مو إلك عيني! ✋", alert=True)
-    user_query = ask.get(id)
+    user_query = ask.get(sender_id)
     if not user_query:
         return await e.edit("عيني انتهت الجلسة، ارجع أرسل السؤال من جديد.")
     if ai_type == "ai":
         await e.answer("جاري التفكير... 🧠")
         await e.edit(f"⏳ جاري معالجة: **{user_query}**")        
         ai_response = await ask_makhfi_ai(user_query)
-        await e.edit(f"**مخفي يقول لك:**\n\n{ai_response}\n\n---\nبخدمتكم - مطور البوت: ابن هاشم")
+        final_text = f"**مخفي يقول لك:**\n\n{ai_response}\n\n---\nبخدمتكم - مطور البوت: ابن هاشم"
+        await e.edit(final_text)
     else:
-        await e.answer("هذا القسم (البحث) قيد التطوير حالياً.. قريباً يكمل! 🛠", alert=True)
+        await e.answer("هذا القسم قيد التطوير حالياً.. قريباً يكمل! 🛠", alert=True)
