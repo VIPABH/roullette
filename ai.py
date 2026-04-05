@@ -1,8 +1,9 @@
 from ABH import *
 from telethon import Button, events
 from datetime import datetime
-from ddgs import DDGS
+from ddg3 import DDGS
 import httpx
+
 def search_web(query):
     with DDGS() as ddgs:
         results = list(ddgs.text(query, max_results=3))
@@ -77,3 +78,33 @@ async def search_callback(event):
         await event.edit(final_text, buttons=None, link_preview=False)
     else:
         await event.answer("ما لگيت نتائج إضافية مفيدة بالويب.", alert=True)
+def search_youtube(query):
+    with DDGS() as ddgs:
+        results = list(ddgs.videos(f"site:youtube.com {query}", max_results=3))
+        if results:
+            context = ""
+            links = "\n\n**📺 المصادر (يوتيوب):**"
+            for i, r in enumerate(results, 1):
+                context += f"فيديو {i}: العنوان: {r['title']}, الوصف: {r.get('description', 'لا يوجد وصف')}\n"
+                links += f"\n{i}. [{r['title']}]({r['content']})"
+            return context, links
+    return "", ""
+@ABH.on(events.NewMessage(pattern=r"^يوتيوب(\s+.*|$)"))
+async def youtube_handler(event):
+    query = event.pattern_match.group(1).strip()
+    if not query:
+        return await event.reply("گولي شنو تريد أبحثلك عنه باليوتيوب؟ مثلاً: `يوتيوب شرح بايثون`")
+    async with event.client.action(event.chat_id, "typing"):
+        yt_context, yt_links = search_youtube(query)        
+        if yt_context:
+            prompt = (
+                f"إليك نتائج بحث من يوتيوب حول '{query}':\n{yt_context}\n\n"
+                "لخص لي أهم المعلومات الموجودة في هذه النتائج بلهجة عراقية "
+                "وبين لي الفائدة من كل فيديو بشكل مختصر."
+            )            
+            ai_summary = await ask_ai(prompt)
+            final_response = f"**🎬 نتائج البحث والتلخيص من يوتيوب:**\n\n{ai_summary}{yt_links}"
+            await event.reply(final_response, link_preview=False)
+        else:
+            await event.reply("والله بحثت بس ما لگيت فيديوهات مناسبة لهل موضوع حالياً. 😕")
+            
