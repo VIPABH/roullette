@@ -1,9 +1,7 @@
-from ABH import *
-from google import genai
-import google.generativeai as genai
-from telethon import Button, events
-from google import genai
+import asyncio
+from google import genai  
 from google.genai import types
+from shortcut import can
 from ABH import *
 from telethon import Button, events
 API_KEY = "AIzaSyDZngGFlslfMKZw18bhKSUmcaQ6PjWyvfc"
