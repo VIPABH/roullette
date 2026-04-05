@@ -1,4 +1,5 @@
 from ABH import *
+from google import genai
 import google.generativeai as genai
 from telethon import Button, events
 from google import genai
