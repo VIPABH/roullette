@@ -59,8 +59,8 @@ async def ai_callback(e):
         return await e.edit("عيني انتهت الجلسة، ارجع أرسل السؤال من جديد.")
     if ai_type == "ai":
         await e.answer("جاري التفكير... 🧠")
-        await e.edit(f"⏳ جاري معالجة: **{user_query}**")
-        ai_response = await ask_makhfi_ai(user_query)        
+        await e.edit(f"⏳ جاري معالجة: **{user_query}**")        
+        ai_response = await ask_makhfi_ai(user_query)
         await e.edit(f"**مخفي يقول لك:**\n\n{ai_response}\n\n---\nبخدمتكم - مطور البوت: ابن هاشم")
     else:
         await e.answer("هذا القسم (البحث) قيد التطوير حالياً.. قريباً يكمل! 🛠", alert=True)
