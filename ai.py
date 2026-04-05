@@ -1,8 +1,7 @@
 from ABH import *
 from telethon import Button, events
 from datetime import datetime
-from duckduckgo_search import DDGS
-import httpx
+from ddgs import DDGSimport httpx
 def search_web(query):
     with DDGS() as ddgs:
         results = list(ddgs.text(query, max_results=3))
