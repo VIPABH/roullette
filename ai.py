@@ -92,21 +92,18 @@ async def youtube_handler(event):
     if not query:
         return await event.reply("گولي شنو تريد أبحثلك عنه باليوتيوب؟ مثلاً: `يوتيوب تعلم البرمجة`")
     async with event.client.action(event.chat_id, "typing"):
-        yt_context = search_youtube(query)        
+        yt_context = search_youtube(query)
         if yt_context:
             prompt = (
-                f"أنت الآن خبير يوتيوب. إليك نتائج بحث عن '{query}':\n\n{yt_context}\n"
-                "المطلوب منك:\n"
-                "1. لخص كل فيديو بنقطة واحدة مختصرة جداً وباللهجة العراقية.\n"
-                "2. ضع كلمة (الرابط) أسفل كل وصف وتكون عبارة عن هايبرلنك يوجه للفيديو.\n"
-                "3. اجعل الأسلوب ذكي ومرتب.\n"
-                "مثال للتنسيق:\n"
-                "• [عنوان الفيديو]\n"
-                "وصف مختصر هنا...\n"
-                "[(الرابط)](رابط الفيديو)"
+                f"أنت خبير محتوى يوتيوب. إليك نتائج البحث عن '{query}':\n\n{yt_context}\n"
+                "المطلوب منك صياغة النتيجة لكل فيديو بهذا الشكل الحرفي وباللهجة العراقية:\n\n"
+                "اسم الفيديو (بشكل مختصر)\n"
+                "\"الشرح\"\n"
+                "الوصف المختصر (نقطة واحدة ذكية)\n"
+                "[(الرابط)](رابط الفيديو)\n\n"
+                "تأكد من وضع مسافة بين كل فيديو وفيديو ليظهر التنسيق مرتباً."
             )            
             ai_res = await ask_ai(prompt)
-            final_response = f"**🎬 نتائج بحث يوتيوب الذكية:**\n\n{ai_res}"
-            await event.reply(final_response, link_preview=False)
+            await event.reply(ai_res, link_preview=False)
         else:
-            await event.reply("ما لگيت نتائج يوتيوب مناسبة لهل بحث. 😕")
+            await event.reply("والله دورت بس ما طلع عندي شي بخصوص هذا البحث. 😕")
