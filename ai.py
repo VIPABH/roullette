@@ -50,8 +50,8 @@ async def ai_callback(e):
     data_parts = e.data.decode('utf-8').split(':')
     ai_type = data_parts[0]
     user_id = int(data_parts[1])
-    if not can(id): 
-        return await e.answer("لا تستطيع استخدام هذا الامر.", alert=True)
+    # if not can(id): 
+    #     return await e.answer("لا تستطيع استخدام هذا الامر.", alert=True)
     if id != user_id: 
         return await e.answer("هذا البحث مو إلك عيني! ✋", alert=True)
     user_query = ask.get(id)
