@@ -62,6 +62,7 @@ async def settings_callback(e):
     elif data == "del_add_session":
         r.hdel(STATE_KEY, e.sender_id)
         await e.edit("✅ تم إنهاء الجلسة.", buttons=[Button.inline("⬅️ القائمة الرئيسية", data="back_to_settings")])
+b = Button.inline("حذف الجلسة", data="del_add_session")
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
     if r.sismember(BANNED_KEY, str(e.sender_id)):
@@ -77,7 +78,7 @@ async def inputs_handler(e):
             await e.reply(f"✅ تم حظر المستخدم `{user_id}` بنجاح.")
             r.hdel(STATE_KEY, e.sender_id)
         else:
-            await e.reply("⚠️ يرجى إرسال ID صحيح (أرقام فقط).")
+            await e.reply("⚠️ يرجى إرسال ID صحيح (أرقام فقط).", buttons=[b])
     elif state == "add_channel":
         channel_input = e.text.strip()
         try:
@@ -89,13 +90,13 @@ async def inputs_handler(e):
                 return await e.reply("❌ **خطأ:** البوت ليس عضواً في القناة. أضف البوت للقناة أولاً!")
             permissions = await ABH.get_permissions(entity, me)
             if not permissions.is_admin:
-                return await e.reply("❌ **خطأ:** البوت ليس مشرفاً في القناة. ارفعه مشرفاً ثم حاول مجدداً.")
+                return await e.reply("❌ **خطأ:** البوت ليس مشرفاً في القناة. ارفعه مشرفاً ثم حاول مجدداً.", buttons=[b])
             r.sadd(FORCED_KEY, str(entity.id))
             await e.reply(f"✅ تم إضافة القناة `{getattr(entity, 'title', 'القناة')}` (ID: `{entity.id}`) للاشتراك الإجباري.")
             r.hdel(STATE_KEY, e.sender_id)
         except ValueError:
-            await e.reply("❌ **خطأ:** لا يمكن العثور على القناة. تأكد من رابط القناة أو اليوزر.")
+            await e.reply("❌ **خطأ:** لا يمكن العثور على القناة. تأكد من رابط القناة أو اليوزر.", buttons=[b])
             r.hdel(STATE_KEY, e.sender_id)
         except Exception as ex:
-            await e.reply(f"❌ **خطأ غير متوقع:** `{str(ex)}`")
+            await hint(f"❌ **خطأ غير متوقع:** `{str(ex)}`")
             r.hdel(STATE_KEY, e.sender_id)
