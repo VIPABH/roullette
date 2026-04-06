@@ -2,7 +2,7 @@ from shortcut import *
 from ABH import *
 from النشر import *
 import asyncio
-channels = r.smembers("forced_channels")
+channels = r.get("forced_channels")
 @ABH.on(events.NewMessage(pattern="^/start$"))
 async def start(e):
     if not e.is_private:
@@ -19,14 +19,15 @@ async def start(e):
         buttons = []
         for ch, joined in zip(channels, results):
             if not joined:
-                buttons.append([Button.url(f"اشترك في {ch}", url=f"https://t.me/{ch}")])
+                entity = await ABH.get_entity(ch)
+                buttons.append([Button.url(f"اشترك في {ch}", url=f"https://t.me/{entity.title}")])
         if buttons:
             await e.reply(
                 "🔐 للوصول إلى خدمات البوت يجب الاشتراك في القنوات التالية:",
                 buttons=buttons
             )
         else:
-            await e.reply(f"اهلا اخي ( {await mention(e)} ) حياك الله \n اني ميكارو مساعدك المجاني في بوابة الذكاء الصناعي\n تكدر تستخدمني بالكروبات وبالخاص شوكت ما تحتاج شيء راح تلكاني يمك \n \help")
+            await e.reply(fr"اهلا اخي ( {await mention(e)} ) حياك الله \n اني ميكارو مساعدك المجاني في بوابة الذكاء الصناعي\n تكدر تستخدمني بالكروبات وبالخاص شوكت ما تحتاج شيء راح تلكاني يمك \n \help")
             users = load_data()
             if str(e.sender_id) not in users:
                 await sign_users(e)
