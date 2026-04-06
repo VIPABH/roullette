@@ -94,9 +94,6 @@ async def inputs_handler(e):
             r.sadd(FORCED_KEY, str(entity.id))
             await e.reply(f"✅ تم إضافة القناة `{getattr(entity, 'title', 'القناة')}` (ID: `{entity.id}`) للاشتراك الإجباري.")
             r.hdel(STATE_KEY, e.sender_id)
-        except ValueError:
-            await e.reply("❌ **خطأ:** لا يمكن العثور على القناة. تأكد من رابط القناة أو اليوزر.", buttons=[b])
-            r.hdel(STATE_KEY, e.sender_id)
         except Exception as ex:
             await hint(f"❌ **خطأ غير متوقع:** `{str(ex)}`")
             r.hdel(STATE_KEY, e.sender_id)
