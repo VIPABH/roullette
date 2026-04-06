@@ -81,15 +81,20 @@ async def inputs_handler(e):
         else:
             await e.reply("⚠️ يرجى إرسال ID صحيح (أرقام فقط).")
     elif state == "add_channel":
-        try:
-            entity = await ABH.get_entity(user_input)
-            me = await ABH.get_me()            
-            permissions = await ABH.get_permissions(entity, me)
-            if not permissions.is_admin:
-                return await e.reply("❌ **خطأ:** البート ليس مشرفاً في القناة.")
-            r.sadd(FORCED_KEY, str(entity.id))
-            await e.reply(f"✅ تم إضافة القناة `{getattr(entity, 'title', 'القناة')}` للاشتراك الإجباري.")
-            r.hdel(STATE_KEY, e.sender_id)
-        except Exception as ex:
-            await e.reply(f"❌ **خطأ:** تعذر العثور على القناة أو البوت ليس عضواً بها.\n`{str(ex)}`")
-            r.hdel(STATE_KEY, e.sender_id)
+            channel_input = e.text.strip()
+            if channel_input.replace('-', '').isdigit():
+                target = int(channel_input)
+            else:
+                target = channel_input 
+            try:
+                entity = await ABH.get_entity(target)
+                me = await ABH.get_me()            
+                permissions = await ABH.get_permissions(entity, me)
+                if not permissions.is_admin:
+                    return await e.reply("❌ البوت ليس مشرفاً في هذه القناة.")
+                r.sadd(FORCED_KEY, str(entity.id))
+                await e.reply(f"✅ تم الإضافة: {entity.title}")
+                r.hdel(STATE_KEY, e.sender_id)
+            except Exception as ex:
+                await e.reply(f"❌ فشل العثور على القناة.\nتأكد من معرف القناة (Username) أو الـ ID الصحيح.\nالخطأ: `{str(ex)}`")
+                r.hdel(STATE_KEY, e.sender_id)
