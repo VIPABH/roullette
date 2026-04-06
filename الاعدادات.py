@@ -66,34 +66,30 @@ b = Button.inline("حذف الجلسة", data="del_add_session")
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
     if r.sismember(BANNED_KEY, str(e.sender_id)):
-        await e.reply("⚠️ لا يمكنك استخدام البوت حالياً. ")
+        await e.reply("⚠️ لا يمكنك استخدام البوت حالياً.")
         raise events.StopPropagation 
-    state = r.hget(STATE_KEY, e.sender_id)
-    if not state: return
-    state = state.decode("utf-8") if isinstance(state, bytes) else state
+    raw_state = r.hget(STATE_KEY, e.sender_id)
+    if not raw_state: 
+        return
+    state = raw_state.decode("utf-8") if isinstance(raw_state, bytes) else raw_state
+    user_input = e.text.strip()
     if state == "step_ban":
-        user_id = e.text.strip()
-        if user_id.isdigit():
-            r.sadd(BANNED_KEY, user_id)
-            await e.reply(f"✅ تم حظر المستخدم `{user_id}` بنجاح.")
+        if user_input.isdigit():
+            r.sadd(BANNED_KEY, user_input)
+            await e.reply(f"✅ تم حظر المستخدم `{user_input}` بنجاح.")
             r.hdel(STATE_KEY, e.sender_id)
         else:
-            await e.reply("⚠️ يرجى إرسال ID صحيح (أرقام فقط).", buttons=[b])
+            await e.reply("⚠️ يرجى إرسال ID صحيح (أرقام فقط).")
     elif state == "add_channel":
-        channel_input = e.text.strip()
         try:
-            entity = await ABH.get_entity(channel_input)
-            me = await ABH.get_me()
-            try:
-                participant = await ABH.get_participant(entity, me)
-            except Exception:
-                return await e.reply("❌ **خطأ:** البوت ليس عضواً في القناة. أضف البوت للقناة أولاً!")
+            entity = await ABH.get_entity(user_input)
+            me = await ABH.get_me()            
             permissions = await ABH.get_permissions(entity, me)
             if not permissions.is_admin:
-                return await e.reply("❌ **خطأ:** البوت ليس مشرفاً في القناة. ارفعه مشرفاً ثم حاول مجدداً.", buttons=[b])
+                return await e.reply("❌ **خطأ:** البート ليس مشرفاً في القناة.")
             r.sadd(FORCED_KEY, str(entity.id))
-            await e.reply(f"✅ تم إضافة القناة `{getattr(entity, 'title', 'القناة')}` (ID: `{entity.id}`) للاشتراك الإجباري.")
+            await e.reply(f"✅ تم إضافة القناة `{getattr(entity, 'title', 'القناة')}` للاشتراك الإجباري.")
             r.hdel(STATE_KEY, e.sender_id)
         except Exception as ex:
-            await hint(f"❌ **خطأ غير متوقع:** `{str(ex)}`")
+            await e.reply(f"❌ **خطأ:** تعذر العثور على القناة أو البوت ليس عضواً بها.\n`{str(ex)}`")
             r.hdel(STATE_KEY, e.sender_id)
