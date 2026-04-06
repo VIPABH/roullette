@@ -2,6 +2,7 @@ from shortcut import *
 from ABH import *
 from النشر import *
 import asyncio
+channels = r.get("forced_channels")
 @ABH.on(events.NewMessage(pattern="^/start$"))
 async def start(e):
     if not e.is_private:
