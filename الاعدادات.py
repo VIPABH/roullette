@@ -7,8 +7,8 @@ BANNED_KEY = "banned_users"
 USERS_KEY = "save_users"
 @ABH.on(events.CallbackQuery)
 async def settings_callback(e):
-    # if not isprof(e.sender_id):
-    #     return await e.answer("ليس لك صلاحية", alert=True)
+    if not can(e.sender_id):
+        return await e.answer("ليس لك صلاحية", alert=True)
     data = e.data.decode("utf-8")
     if data == "back_to_settings":
         await main_settings(e)
@@ -64,6 +64,7 @@ async def settings_callback(e):
         await e.edit("✅ تم إنهاء الجلسة.", buttons=[Button.inline("⬅️ القائمة الرئيسية", data="back_to_settings")])
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
+    r.delete(BANNED_KEY)
     if r.sismember(BANNED_KEY, str(e.sender_id)):
         raise events.StopPropagation 
     state = r.hget(STATE_KEY, e.sender_id)
