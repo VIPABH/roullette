@@ -7,9 +7,12 @@ BANNED_KEY = "banned_users"
 USERS_KEY = "save_users"
 @ABH.on(events.CallbackQuery)
 async def settings_callback(e):
+    data = e.data.decode("utf-8")
+    if data == "del_add_session":
+        r.hdel(STATE_KEY, e.sender_id)
+        await e.edit("✅ تم إنهاء الجلسة.", buttons=[Button.inline("⬅️ القائمة الرئيسية", data="back_to_settings")])
     if not can(e.sender_id):
         return await e.answer("ليس لك صلاحية", alert=True)
-    data = e.data.decode("utf-8")
     if data == "back_to_settings":
         await main_settings(e)
     elif data == "set_channel":
@@ -59,9 +62,6 @@ async def settings_callback(e):
     elif data == "count_users":
         count = r.scard(USERS_KEY)
         await e.answer(f"📊 إجمالي المستخدمين: {count}", alert=True)
-    elif data == "del_add_session":
-        r.hdel(STATE_KEY, e.sender_id)
-        await e.edit("✅ تم إنهاء الجلسة.", buttons=[Button.inline("⬅️ القائمة الرئيسية", data="back_to_settings")])
 b = Button.inline("حذف الجلسة", data="del_add_session")
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
