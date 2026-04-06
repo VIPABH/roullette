@@ -64,8 +64,8 @@ async def settings_callback(e):
         await e.edit("✅ تم إنهاء الجلسة.", buttons=[Button.inline("⬅️ القائمة الرئيسية", data="back_to_settings")])
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
-    r.delete(BANNED_KEY)
     if r.sismember(BANNED_KEY, str(e.sender_id)):
+        await e.reply("⚠️ لا يمكنك استخدام البوت حالياً. ")
         raise events.StopPropagation 
     state = r.hget(STATE_KEY, e.sender_id)
     if not state: return
