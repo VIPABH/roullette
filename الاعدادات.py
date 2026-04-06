@@ -11,7 +11,7 @@ async def settings_callback(e):
     if data == "del_add_session":
         r.hdel(STATE_KEY, e.sender_id)
         await e.edit("✅ تم إنهاء الجلسة.", buttons=[Button.inline("⬅️ القائمة الرئيسية", data="back_to_settings")])
-    if not can(e.sender_id):
+    if not isprof(e.sender_id):
         return await e.answer("ليس لك صلاحية", alert=True)
     if data == "back_to_settings":
         await main_settings(e)
