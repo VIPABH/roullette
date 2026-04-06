@@ -1,10 +1,9 @@
 from telethon.tl.functions.channels import GetParticipantRequest
 from ABH import *
 import asyncio
-# wfffp = 1910015590
+wfffp = 1910015590
 owner = 575441333
-# name = {wfffp: 'ابن هاشم', owner: 'احمد'}
-name = { owner: 'احمد'}
+name = {wfffp: 'ابن هاشم', owner: 'احمد'}
 can = lambda user_id: user_id in r.smembers("save_users")
 isprof = lambda user_id: user_id in (wfffp, owner)
 async def mention(entity):
