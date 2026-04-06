@@ -20,7 +20,7 @@ async def start(e):
         for ch, joined in zip(channels, results):
             if not joined:
                 entity = await ABH.get_entity(int(ch))
-                buttons.append([Button.url(f"اشترك في {ch}", url=f"https://t.me/{entity.title}")])
+                buttons.append([Button.url(f"اشترك في {entity.title}", url=f"https://t.me/{entity.username}")])
         if buttons:
             await e.reply(
                 "🔐 للوصول إلى خدمات البوت يجب الاشتراك في القنوات التالية:",
