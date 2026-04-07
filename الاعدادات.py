@@ -17,9 +17,9 @@ async def main_settings(e):
     ]
     text = "🛠 **إعدادات التحكم في البوت:**"
     if isinstance(e, events.CallbackQuery):
-        await e.edit(text, buttons=buttons)
-    else:
         await e.reply(text, buttons=buttons)
+    else:
+        await e.edit(text, buttons=all_buttons)
 @ABH.on(events.CallbackQuery)
 async def settings_callback(e):
     data = e.data.decode("utf-8")
