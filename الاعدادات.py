@@ -62,6 +62,20 @@ async def settings_callback(e):
     elif data == "count_users":
         count = r.scard(USERS_KEY)
         await e.answer(f"📊 إجمالي المستخدمين: {count}", alert=True)
+    elif data == 'post':
+        count = r.scard(USERS_KEY)
+        b = [
+            Button.inline(f'عدد المستخدمين ( {count} )🧮', data='count_users'),
+            Button.inline(f'قائمة المستخدمين🧑‍🤝‍🧑', data='list_users'),
+             ]
+        await e.edit('قائمة النشر والاعضاء', buttons=b)
+    elif data == 'banned_stuff':
+        b = [
+            Button.inline('حظر عضو⛔', data='ban_user'),
+            Button.inline('الغاء حظر عضو❗', data='unban_user'),
+            Button.inline('المحظورين', data='banned'),
+            ]
+        await e.edit('قائمة الحظر والمحظورين', buttons=b)
 b = Button.inline("حذف الجلسة", data="del_add_session")
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
