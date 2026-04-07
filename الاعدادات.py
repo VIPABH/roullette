@@ -45,7 +45,10 @@ async def settings_callback(e):
         channels = r.smembers(FORCED_KEY)
         if not channels:
             return await e.answer("⚠️ لا توجد قنوات مضافة حالياً.", alert=True)
-        text = "📌 **القنوات المضافة حالياً:**\n\n" + "\n".join([f"`{ch.decode() if isinstance(ch, bytes) else ch}`" for ch in channels])
+        text = "📌 **القنوات المضافة حالياً:**\n\n" 
+        for ch in channels:
+            chat = await ABH.get_entity(ch)
+            text += f'( {chat.title} ) ~ {ch}\n'
         await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="channels")])
     elif data == "del_channel":
         channels = r.smembers(FORCED_KEY)
@@ -145,3 +148,4 @@ async def inputs_handler(e):
         except Exception as ex:
             await e.reply(f"❌ خطأ: لم يتم العثور على القناة أو البوت ليس مشرفاً.\nالخطأ: `{str(ex)}`")
             r.hdel(STATE_KEY, e.sender_id)
+            
