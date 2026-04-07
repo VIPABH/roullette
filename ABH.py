@@ -20,7 +20,7 @@ r = redis.Redis(connection_pool=pool)
 MAX_CONCURRENT_TASKS = 500
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
 ABH = TelegramClient(
-    "roullette", 
+    "mikaru", 
     API_ID, 
     API_HASH,
     connection=connection.ConnectionTcpFull,
