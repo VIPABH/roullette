@@ -71,9 +71,9 @@ async def settings_callback(e):
         await e.edit('قائمة النشر والاعضاء', buttons=b)
     elif data == 'banned_stuff':
         b = [
-            Button.inline('حظر عضو⛔', data='ban_user'),
-            Button.inline('الغاء حظر عضو❗', data='unban_user'),
-            Button.inline('المحظورين', data='banned'),
+            [Button.inline('حظر عضو⛔', data='ban_user'),
+            Button.inline('الغاء حظر عضو❗', data='unban_user'),],
+            [Button.inline('المحظورين', data='banned'),]
             ]
         await e.edit('قائمة الحظر والمحظورين', buttons=b)
 b = Button.inline("حذف الجلسة", data="del_add_session")
