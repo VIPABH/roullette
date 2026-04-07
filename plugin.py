@@ -30,7 +30,7 @@ async def start(e):
                 buttons=buttons
             )
         else:
-            await e.reply(fr"اهلا اخي ( {await mention(e)} ) حياك الله \n اني ميكارو مساعدك المجاني في بوابة الذكاء الصناعي\n تكدر تستخدمني بالكروبات وبالخاص شوكت ما تحتاج شيء راح تلكاني يمك \n \help")
+            await e.reply(f"اهلا اخي ( {await mention(e)} ) حياك الله \n اني ميكارو مساعدك المجاني في بوابة الذكاء الصناعي\n تكدر تستخدمني بالكروبات وبالخاص شوكت ما تحتاج شيء راح تلكاني يمك \n \help")
             users = load_data()
             if str(e.sender_id) not in users:
                 await sign_users(e)
