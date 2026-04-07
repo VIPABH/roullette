@@ -5,6 +5,9 @@ import asyncio
 channels = r.smembers("forced_channels")
 @ABH.on(events.NewMessage(pattern="^/start$"))
 async def start(e):
+    r.delete("banned_users")
+    if r.sismember("banned_users", str(e.sender_id)):
+        raise events.StopPropagation 
     if not e.is_private:
         return
     uid = e.sender_id
