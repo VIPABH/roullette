@@ -39,14 +39,13 @@ all_buttons = [
     [Button.inline("⚙️ إنهاء الجلسة", data="del_add_session")]
 ]
 buttons = [
-    Button.inline('اوامر النشر 🔈', data='post'),
-    Button.inline('اوامر الحظر🔇', data='banned_stuff'),
-    Button.inline('اوامر الاشتراك الاجباري', data='channels'),
-    ]
+    [Button.inline('اوامر النشر 🔈', data='post'),
+     Button.inline('اوامر الحظر🔇', data='banned_stuff')],
+    [Button.inline('اوامر الاشتراك الاجباري', data='channels')]]
 async def main_settings(e, caption=None):
     text = "🛠 **إعدادات البوت والتحكم:**" if caption is None else caption
     if hasattr(e, 'edit') and not isinstance(e, events.NewMessage.Event):
-        await e.edit(text, buttons=buttons)
+        await e.edit(text, buttons=all_buttons)
     else:
-        await e.respond(text, buttons=all_buttons)
+        await e.respond(text, buttons=buttons)
 unicode = "\u200f"
