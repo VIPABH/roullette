@@ -47,7 +47,7 @@ async def settings_callback(e):
             return await e.answer("⚠️ لا توجد قنوات مضافة حالياً.", alert=True)
         text = "📌 **القنوات المضافة حالياً:**\n\n" 
         for ch in channels:
-            chat = await ABH.get_entity(ch)
+            chat = await ABH.get_entity(int(ch))
             text += f'( {chat.title} ) ~ {ch}\n'
         await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="channels")])
     elif data == "del_channel":
@@ -148,4 +148,3 @@ async def inputs_handler(e):
         except Exception as ex:
             await e.reply(f"❌ خطأ: لم يتم العثور على القناة أو البوت ليس مشرفاً.\nالخطأ: `{str(ex)}`")
             r.hdel(STATE_KEY, e.sender_id)
-            
