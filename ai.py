@@ -76,7 +76,7 @@ async def main_handler(event):
         await event.reply(final_text, buttons=buttons, link_preview=False)
 @ABH.on(events.CallbackQuery(pattern=r"deep_(\d+)"))
 async def deep_search_callback(event):
-    original = await event.get_reply_message()
+    original = await event.get_message()
     if not original or not original.text: 
         return await event.answer("ما لكيت الرسالة الأصلية.")    
     query = original.text.split(maxsplit=1)[1]
