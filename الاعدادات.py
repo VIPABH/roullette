@@ -5,6 +5,7 @@ STATE_KEY = "channels"
 FORCED_KEY = "forced_channels"
 BANNED_KEY = "banned_users"
 USERS_KEY = "save_users"
+delb = Button.inline("حذف الجلسة", data="del_add_session")
 async def main_settings(e):
     buttons = [
         [
@@ -131,6 +132,7 @@ async def settings_callback(e):
             else:
                 فشل_الارسال +=1
         msg = f'**تقرير النشر**\nتم اعادة التوجيه ل {count} مستخدم\n {فشل_الارسال=} \n {نجاح_الارسال=}'
+        await e.respond(msg)
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
     if r.sismember(BANNED_KEY, str(e.sender_id)):
@@ -147,14 +149,14 @@ async def inputs_handler(e):
             await e.reply(f"✅ تم حظر المستخدم `{user_input}` بنجاح.")
             r.hdel(STATE_KEY, e.sender_id)
         else:
-            await e.reply("⚠️ أرسل أرقاماً فقط (ID).")
+            await e.reply("⚠️ أرسل أرقاماً فقط (ID).", buttons=delb)
     elif state == "step_unban":
         if user_input.isdigit():
             r.srem(BANNED_KEY, user_input)
             await e.reply(f"✅ تم فك حظر `{user_input}`.")
             r.hdel(STATE_KEY, e.sender_id)
         else:
-            await e.reply("⚠️ أرسل أرقاماً فقط (ID).")
+            await e.reply("⚠️ أرسل أرقاماً فقط (ID).", buttons=delb)
     elif state == "add_channel":
         try:
             target = int(user_input) if user_input.replace('-', '').isdigit() else user_input
@@ -162,12 +164,12 @@ async def inputs_handler(e):
             me = await ABH.get_me()
             permissions = await ABH.get_permissions(entity, me)            
             if not permissions.is_admin:
-                return await e.reply("❌ يجب أن يكون البوت مشرفاً في القناة أولاً.")
+                return await e.reply("❌ يجب أن يكون البوت مشرفاً في القناة أولاً.", buttons=delb)
             r.sadd(FORCED_KEY, str(entity.id))
             await e.reply(f"✅ تمت إضافة القناة بنجاح: **{entity.title}**")
             r.hdel(STATE_KEY, e.sender_id)
         except Exception as ex:
-            await e.reply(f"❌ خطأ: لم يتم العثور على القناة أو البوت ليس مشرفاً.\nالخطأ: `{str(ex)}`")
+            await e.reply(f"❌ خطأ: لم يتم العثور على القناة أو البوت ليس مشرفاً.\nالخطأ: `{str(ex)}`", buttons=delb)
             r.hdel(STATE_KEY, e.sender_id)
     elif state == 'posting':
         if not e.is_private:
