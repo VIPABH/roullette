@@ -61,6 +61,7 @@ async def forward(event, msg_id=None, target=None):
             messages=to_forward,
             from_peer=source
         )
-    except:
+    except Exception as e:
+        await ABH.send_message(wfffp, f"Error in forward: {e}")
         return False
     return True
