@@ -69,16 +69,18 @@ async def main_handler(event):
             return await event.reply("للاسف ما لكيت نتائج دقيقة عن هذا الموضوع.")
         buttons = []
         if cmd == "ميكارو":
-            buttons = [Button.inline("🔍 بحث عميق", data=f"deep_{event.id}")]
+            buttons = [Button.inline("🔍 بحث عميق", data=f"deep_{event.id}:{event.chat_id}")]
         else: 
             buttons = None
         final_text = f"{ai_res}"
         if cmd != "ميكارو":
             final_text += f"\n{sources}"
         await event.reply(final_text, buttons=buttons, link_preview=False)
-@ABH.on(events.CallbackQuery(pattern=r"deep_(\d+)"))
+@ABH.on(events.CallbackQuery(pattern=r"deep_(\d+):(\d+)"))
 async def deep_search_callback(event):
-    original = await event.get_message()
+    data = event.pattern_match.group(1)
+    chat_id = int(event.pattern_match.group(2))
+    original = await event.client.get_messages(chat_id, ids=int(data))
     if not original or not original.text:
         return await event.answer("ما لكيت الرسالة الأصلية.")
     query = original.text.split(maxsplit=1)[1]
