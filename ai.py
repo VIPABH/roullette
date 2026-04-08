@@ -70,18 +70,20 @@ async def main_handler(event):
         buttons = []
         if cmd == "ميكارو":
             buttons = [Button.inline("🔍 بحث عميق", data=f"deep_{event.id}")]
+        else: 
+            buttons = None
         final_text = f"{ai_res}"
         if cmd != "ميكارو":
             final_text += f"\n{sources}"
         await event.reply(final_text, buttons=buttons, link_preview=False)
 @ABH.on(events.CallbackQuery(pattern=r"deep_(\d+)"))
 async def deep_search_callback(event):
-    original = await event.get_message()
-    if not original or not original.text: 
-        return await event.answer("ما لكيت الرسالة الأصلية.")    
+    original = await event.get_reply_message()
+    if not original or not original.text:
+        return await event.answer("ما لكيت الرسالة الأصلية.")
     query = original.text.split(maxsplit=1)[1]
     await event.edit("**جاري التعمق في المصادر وتحليلها... 🧐**")
-    context, sources = universal_search(query, "web") 
+    context, sources = universal_search(query, "web")
     deep_prompt = f"قم بعمل تحليل مفصل وشامل لـ: {query}\nالمعلومات: {context}"
     res = await ask_ai(deep_prompt, "أنت الآن خبير وباحث، قدم تقريراً مفصلاً بالعراقي.")
     await event.edit(f"**نتائج البحث العميق:**\n\n{res}{sources}", link_preview=False)
