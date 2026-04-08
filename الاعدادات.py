@@ -48,7 +48,7 @@ async def settings_callback(e):
         text = "📌 **القنوات المضافة حالياً:**\n\n" 
         for ch in channels:
             chat = await ABH.get_entity(int(ch))
-            text += f'( {chat.title} ) ~ {ch}\n'
+            text += f'( {chat.title} ) ~ `{ch}`\n'
         await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="channels")])
     elif data == "del_channel":
         channels = r.smembers(FORCED_KEY)
@@ -70,7 +70,7 @@ async def settings_callback(e):
         b = [
             [Button.inline(f'العدد: ( {count} ) 📊', data='count_users')],
             [Button.inline('قائمة المستخدمين 🧑‍🤝‍🧑', data='list_users')],
-            [Button.inline('⬅️ عودة', data='back_to_settings')]
+            [Button.inline('نشر رسالة', data='post_message')]
         ]
         await e.edit('📊 قائمة النشر والإحصائيات:', buttons=b)
     elif data == "count_users":
@@ -110,6 +110,15 @@ async def settings_callback(e):
             return await e.answer("⚠️ لا يوجد محظورون.", alert=True)
         text = "🚫 **قائمة المحظورين:**\n\n" + "\n".join([f"`{u.decode() if isinstance(u, bytes) else u}`" for u in banned_users])
         await e.edit(text, buttons=[Button.inline("⬅️ عودة", data="banned_stuff")])
+    elif data == 'post_message': 
+        await e.edit('💬 ارسل رسالة النشر:', buttons=[Button.inline('إلغاء', data='cancel_post')])
+        r.hset(STATE_KEY, e.sender_id, "posting")
+    elif data.startswith('yes_post'):
+        id = data.replace('yes_post', '')
+        msg = await ABH.get_messages(chat=e.chat_id, ids=int(id))
+        if not msg:
+            return await e.reply('ما لكيت الرسالة')
+        await e.answer('جاري النشر', alert=True)
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
     if r.sismember(BANNED_KEY, str(e.sender_id)):
@@ -148,3 +157,7 @@ async def inputs_handler(e):
         except Exception as ex:
             await e.reply(f"❌ خطأ: لم يتم العثور على القناة أو البوت ليس مشرفاً.\nالخطأ: `{str(ex)}`")
             r.hdel(STATE_KEY, e.sender_id)
+    elif state == 'posting':
+        if not e.is_private:
+            return await e.reply("⚠️ يجب أن تكون هذه الرسالة في الخاص.")
+        await e.reply("هل تريد نشر هذه الرسالة؟", buttons=[Button.inline("نعم", data=f"yes_post{e.id}"), Button.inline("لا", data="del_add_session")])
