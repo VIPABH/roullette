@@ -115,7 +115,7 @@ async def settings_callback(e):
         r.hset(STATE_KEY, e.sender_id, "posting")
     elif data.startswith('yes_post'):
         id = data.replace('yes_post', '')
-        msg = await ABH.get_messages(chat=e.chat_id, ids=int(id))
+        msg = await ABH.get_messages(entity=e.chat_id, ids=int(id))
         if not msg:
             return await e.reply('ما لكيت الرسالة')
         await e.answer('جاري النشر', alert=True)
