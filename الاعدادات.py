@@ -119,6 +119,17 @@ async def settings_callback(e):
         if not msg:
             return await e.reply('ما لكيت الرسالة')
         await e.answer('جاري النشر', alert=True)
+        users = list(r.smembers(USERS_KEY))
+        count = r.scard(USERS_KEY)
+        فشل_الارسال = 0
+        نجاح_الارسال = 0
+        for id in users:
+            x = await forward(e, msg_id=msg, target=id)
+            if x:
+                نجاح_الارسال += 1
+            else:
+                فشل_الارسال +=1
+        msg = f'**تقرير النشر**\nتم اعادة التوجيه ل {count} مستخدم\n {فشل_الارسال=} \n {نجاح_الارسال=}'
 @ABH.on(events.NewMessage)
 async def inputs_handler(e):
     if r.sismember(BANNED_KEY, str(e.sender_id)):
