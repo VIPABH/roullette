@@ -62,4 +62,5 @@ async def forward(event, msg_id=None, target=None):
             from_peer=source
         )
     except:
-        return
+        return False
+    return True
