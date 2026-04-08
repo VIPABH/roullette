@@ -31,7 +31,8 @@ async def is_in_channel(user_id, channel_username):
     except:
         return False
 async def hint(caption, b=None):
-    return await ABH.send_message(wfffp, message=caption, buttons=b)
+    for id in name.keys():
+        await ABH.send_message(id, message=caption, buttons=b)
 all_buttons = [
     [Button.inline("➕ إضافة قناة", data="set_channel"), Button.inline("🗑 حذف قناة", data="del_channel")],
     [Button.inline("📋 عرض القنوات", data="show_channels"), Button.inline("📊 الإحصائيات", data="count_users")],
@@ -49,3 +50,13 @@ async def main_settings(e, caption=None):
     else:
         await e.respond(text, buttons=buttons)
 unicode = "\u200f"
+async def forward(event, chat=None, id=None):
+    if not chat:
+        chat = event.chat_id
+    if not id:
+        id = event.id
+    await ABH.forward_messages(
+        entity=chat,
+        messages=id,
+        from_peer=event.sender_id
+    )
