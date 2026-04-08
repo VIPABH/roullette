@@ -118,9 +118,10 @@ async def settings_callback(e):
         msg = await ABH.get_messages(entity=e.chat_id, ids=int(id))
         if not msg:
             return await e.reply('ما لكيت الرسالة')
-        await e.answer('جاري النشر', alert=True)
         users = list(r.smembers(USERS_KEY))
         count = r.scard(USERS_KEY)
+        await e.answer('جاري النشر', alert=True)
+        await e.edit('يجري النشر ل {count} محادثة...')
         فشل_الارسال = 0
         نجاح_الارسال = 0
         for id in users:
