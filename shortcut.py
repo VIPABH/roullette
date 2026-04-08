@@ -50,13 +50,15 @@ async def main_settings(e, caption=None):
     else:
         await e.respond(text, buttons=buttons)
 unicode = "\u200f"
-async def forward(event, chat=None, id=None):
-    if not chat:
-        chat = event.chat_id
-    if not id:
-        id = event.id
-    await ABH.forward_messages(
-        entity=chat,
-        messages=id,
-        from_peer=event.sender_id
-    )
+async def forward(event, chat=None, msg_id=None):
+    target = chat if chat else event.chat_id
+    to_forward = msg_id if msg_id else event.id    
+    source = event.chat_id
+    try:
+        await ABH.forward_messages(
+            entity=target,
+            messages=to_forward,
+            from_peer=source
+        )
+    except:
+        return
