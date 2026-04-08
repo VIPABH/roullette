@@ -121,7 +121,7 @@ async def settings_callback(e):
         users = list(r.smembers(USERS_KEY))
         count = r.scard(USERS_KEY)
         await e.answer('جاري النشر', alert=True)
-        await e.edit('يجري النشر ل {count} محادثة...')
+        await e.edit(f'يجري النشر ل {count} محادثة...')
         فشل_الارسال = 0
         نجاح_الارسال = 0
         for id in users:
